@@ -1,0 +1,99 @@
+---
+title: Running the containers
+description: Run Mercury with Docker — the drop-in Measure Calculator stack, or the server on its own — and know which ports to expect.
+---
+
+import { Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+
+Mercury ships as a single binary and a Docker image. The quickest way to try it against a realistic pipeline is the drop-in Measure Calculator stack; for development you can also run the server on its own.
+
+## The drop-in Measure Calculator stack
+
+Mercury slots in as the **evaluator** inside a Measure Calculator environment, alongside the MCT frontend/backend and facility FHIR servers — matching the layout an existing CQF pipeline already uses. A compose file for that layout looks like this:
+
+```yaml
+# docker-compose.yml
+services:
+  mercury:
+    image: mercury                    # [TBD: your image reference]
+    command: serve --host 0.0.0.0 --port 8080
+    ports:
+      - "8090:8080"
+
+  mct-ui:
+    image: <your-mct-frontend-image>
+    ports:
+      - "3000:3000"
+
+  mct-backend:
+    image: <your-mct-backend-image>
+    ports:
+      - "8088:8088"
+
+  facility-a-fhir:
+    image: <your-fhir-server-image>
+    ports:
+      - "8080:8080"
+
+  facility-b-fhir:
+    image: <your-fhir-server-image>
+    ports:
+      - "8082:8080"
+```
+
+```bash
+docker compose up --build
+```
+
+**Ports it brings up:**
+
+| Service | URL |
+| --- | --- |
+| MCT UI | `http://localhost:3000` |
+| MCT backend | `http://localhost:8088` |
+| Facility A FHIR | `http://localhost:8080/fhir` |
+| Facility B FHIR | `http://localhost:8082/fhir` |
+| Mercury (CQF / API / FHIR) | `http://localhost:8090` — base paths `/cqf`, `/api`, `/fhir` |
+
+<Aside type="note">
+Because Mercury speaks the same FHIR CQF API as the reference evaluator, MCT and your harness point at Mercury's base URL unchanged. That's the whole idea of "drop-in".
+</Aside>
+
+## Comparing against the reference engine
+
+To check output parity, run your existing reference stack (the CQL translation service and CQF Ruler, or whatever you use today) side by side with Mercury, and compare results for the same libraries and patients against both base URLs. The reference stack exists only to check outputs and behavior — Mercury is the evaluator in the main pipeline.
+
+## Running the server on its own
+
+<Tabs>
+  <TabItem label="Binary">
+  ```bash
+  mercury serve --host 127.0.0.1 --port 8080
+  ```
+  </TabItem>
+  <TabItem label="Docker (image only)">
+  ```bash
+  # Map the port and a data volume (see "Mounting your data drive")
+  docker run --rm \
+    -p 8080:8080 \
+    -v mercury-data:/var/lib/mercury \
+    mercury serve --host 0.0.0.0 --port 8080
+  ```
+  <p><em>Image name and tag depend on how you built or pulled Mercury — <code>[TBD: your image reference]</code>.</em></p>
+  </TabItem>
+</Tabs>
+
+## Health checks
+
+Every deployment exposes readiness and liveness endpoints — use them in compose healthchecks, Kubernetes probes, or a load balancer.
+
+```bash
+curl -fsS http://localhost:8080/api/health
+curl -fsS http://localhost:8080/api/ready
+```
+
+## Next steps
+
+- [Mounting your data drive](/data-persistence) — so libraries, measures, and data survive `docker compose down`.
+- [Loading data: preload vs inline](/loading-data) — get patient data into an evaluation.
+- [CLI reference](/reference/cli) — flags for `serve`, `run`, and `lang-tests`.

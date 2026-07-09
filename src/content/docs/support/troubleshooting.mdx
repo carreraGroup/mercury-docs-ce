@@ -1,0 +1,72 @@
+---
+title: Troubleshooting & FAQ
+description: Common issues, quick fixes, and straight answers about running the Mercury Community Edition.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Quick fixes for the most common issues, then answers to the questions that come up most. If something here doesn't cover it, use the **Report an issue** button at the bottom of the page.
+
+## Common issues
+
+### Server not reachable
+Confirm `serve` is running and your `--base-url` (or the URL you're curling) matches the host and port. In the drop-in container stack, Mercury is on port `8090`, not `8080`.
+
+```bash
+curl -fsS http://127.0.0.1:8080/api/health
+```
+
+### `$evaluate` returns 404 (library not found)
+POST the `Library` before evaluating. Canonicals resolve as `Library/{id}|{version}` — make sure the id and version match.
+
+### Subject or data not found
+Load the patient bundle first via `POST /cqf/data/bundle`, and make sure the `subject` id matches a resource in it. See [Loading data](/loading-data).
+
+### Operation format errors (CLI)
+`--operation` must be `libraryId:version:definition`, e.g. `Test:1.0.0:InDenominator`.
+
+### File not found (CLI)
+Confirm the `--data`, `--valueset`, and `--cql`/`--elm` paths exist and are readable.
+
+### State disappeared after a restart
+The container's data directory wasn't on a mounted volume. See [Mounting your data drive](/data-persistence).
+
+## Security & operations FAQ
+
+<Aside type="note">
+These answers describe the free Community Edition you can run today. Where something isn't confirmed for your build, it's marked <code>[TBD]</code> — fill those in before a formal review.
+</Aside>
+
+### Where does our data live?
+Community Edition runs entirely in your environment — your container, your host. Mercury does not phone home; data stays wherever you deploy it.
+
+### How is access controlled?
+Mercury Core does not ship authentication. Run it on a trusted network behind your own reverse proxy or API gateway for authn/authz. OAuth/OIDC, RBAC, and audit logging are part of the **Security** pack (in development).
+
+### How are secrets handled?
+Core evaluation requires no external credentials or API keys — you hand it libraries, value sets, and data directly. Secrets management for connectors that do need credentials is part of the Security pack.
+
+### What's the deployment model?
+Self-hosted single binary or Docker image. It composes with MCT and facility FHIR servers via docker-compose, and runs without a JVM.
+
+### Is data persisted? What about backups?
+Yes — Mercury Core keeps durable local state that survives a restart when mounted on a volume. Back it up with your normal volume/host backup process. Replication and built-in backup/restore are part of the **HA** pack (in development). See [Mounting your data drive](/data-persistence).
+
+### What logging and monitoring are available?
+Structured logs (pretty or JSON) with configurable levels, plus `/api/health` and `/api/ready`. Metrics, dashboards, tracing, and lineage are part of the **Insight** pack (in development).
+
+### How do upgrades work?
+Pull a new image or binary and restart. Zero-downtime rolling upgrades and node recovery are part of the **HA** pack (in development).
+
+### Does Mercury reach out to anything on its own?
+No. It's strictly request/response — you supply the libraries, value sets, and data, and it evaluates them. It doesn't fetch terminology, code systems, or patient data from external services.
+
+### How is correctness assured?
+Mercury is validated against the HL7 CQL 1.5.2 language test suite and benchmarked side-by-side against the reference engine for output parity. See [Conformance & correctness](/support/conformance).
+
+### What are the support boundaries?
+Community Edition is self-service — this documentation site, and a public issue tracker (best-effort, no response-time guarantee). Guaranteed response times and hands-on help are available as paid enterprise support.
+
+<Aside type="caution">
+Mercury Community Edition attests to **no** specific compliance posture. Nothing here should be read as a HIPAA, SOC 2, or other compliance claim.
+</Aside>

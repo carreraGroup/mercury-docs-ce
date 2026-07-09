@@ -1,0 +1,45 @@
+---
+title: Conformance & correctness
+description: How Mercury is validated against the HL7 CQL 1.5.2 language test suite — and how to reproduce the results yourself.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Mercury is validated against the **HL7 CQL 1.5.2 specification test suite** and benchmarked side-by-side against the reference engine to check output parity.
+
+## The numbers
+
+| | |
+| --- | --- |
+| Language-area fixtures | **28** |
+| Cases passing / executed | **1,783 / 1,783** |
+| Pass rate | **100%** |
+
+The suite documents **1,795 cases across 28 fixtures**. Mercury executes and passes **1,783**; the remaining cases require pre-compiled ELM input and are skipped.
+
+## Reproduce it yourself
+
+Run the language tests and inspect the summary:
+
+```bash
+mercury lang-tests --dir cql-tests/tests/cql
+```
+
+This writes a `cql-xml-summary.json` you can review case by case.
+
+## What's covered
+
+The suite spans the CQL language by area — interval and temporal operators, comparison and logical operators, list/set operators, arithmetic, type conversion, string operators, aggregates, queries, and more. The largest fixtures are the interval and date/time areas.
+
+## Output parity
+
+Beyond the language suite, Mercury is checked against golden fixtures and compared to the reference engine (CQF Ruler) for the **same libraries and patients**, so you can confirm it returns the same population results before switching. See [Running the containers](/containers) for the side-by-side stack.
+
+<Aside type="caution" title="Performance figures are preliminary">
+Early side-by-side benchmarks show Mercury one to two orders of magnitude faster than CQF Ruler, workload depending. These figures are **preliminary and directional** — full methodology and the performance paper are forthcoming. Always run the comparison on *your* workload.
+</Aside>
+
+## Next steps
+
+- [CLI reference](/reference/cli) — all `lang-tests` options.
+- [Quickstart](/quickstart) — run your own parity comparison.

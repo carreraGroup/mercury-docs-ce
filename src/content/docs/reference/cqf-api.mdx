@@ -1,0 +1,94 @@
+---
+title: CQF API (/cqf)
+description: The FHIR CQF endpoints Mercury exposes — metadata, Library and Measure CRUD, and $evaluate — with request examples.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Mercury implements the **FHIR CQF** operation surface under the `/cqf` base path, so it slots into a measure-calculation pipeline in place of the reference evaluator. This page covers the endpoints you'll use most.
+
+<Aside type="note">
+Base URL below is `http://127.0.0.1:8080`. In the drop-in container stack, Mercury is on port `8090`. Adjust to your deployment.
+</Aside>
+
+## Capability statement
+
+```bash
+curl http://127.0.0.1:8080/cqf/metadata
+```
+
+Returns the FHIR `CapabilityStatement` describing the supported resources and operations.
+
+## Data
+
+Load a FHIR bundle into the server's patient corpus, so evaluations can reference subjects by id.
+
+```bash
+POST /cqf/data/bundle
+Content-Type: application/fhir+json
+```
+
+```bash
+curl -X POST http://127.0.0.1:8080/cqf/data/bundle \
+  -H "Content-Type: application/fhir+json" \
+  --data @patients.bundle.json
+```
+
+See [Loading data: preload vs inline](/loading-data) for when to preload vs. supply data inline.
+
+## Library
+
+Create, read, update, and delete FHIR `Library` resources. Mercury accepts **CQL directly** and also **ELM XML** as an alternative input.
+
+```bash
+# Create (returns 201)
+curl -X POST http://127.0.0.1:8080/cqf/Library \
+  -H "Content-Type: application/fhir+json" \
+  --data @Test.Library.json
+
+# Read
+curl http://127.0.0.1:8080/cqf/Library/Test
+```
+
+<Aside type="tip">
+Canonicals resolve as `Library/{id}|{version}`. If `$evaluate` returns `404`, POST the `Library` first.
+</Aside>
+
+## Measure
+
+`Measure` resources support the same CRUD operations as `Library`.
+
+```bash
+curl -X POST http://127.0.0.1:8080/cqf/Measure \
+  -H "Content-Type: application/fhir+json" \
+  --data @Test.Measure.json
+```
+
+## $evaluate
+
+Evaluate a library expression (or a whole measure) for a subject. Returns `200` with a FHIR `Parameters` resource.
+
+```bash
+GET /cqf/Library/{id}/$evaluate?subject=Patient/{id}&expression={name}
+```
+
+```bash
+curl "http://127.0.0.1:8080/cqf/Library/Test/\$evaluate?subject=Patient/123&expression=InDenominator"
+```
+
+**Result** — a `Parameters` resource whose `evaluate` part lists each expression and its value, e.g. `InDenominator → "true"`.
+
+## Harness-compatibility stubs
+
+For compatibility with existing tooling, Mercury exposes `$data-requirements` and `$package` as **stubs**. They respond so harnesses that call them don't break; they aren't full implementations.
+
+```bash
+GET /cqf/Library/{id}/$data-requirements
+POST /cqf/Library/{id}/$package
+```
+
+## Next steps
+
+- [REST surface (/api, /fhir)](/reference/rest-api) — health, translate, query, OpenAPI.
+- [CLI reference](/reference/cli) — drive these operations from the command line.
+- [Troubleshooting & FAQ](/support/troubleshooting) — common `$evaluate` errors.

@@ -1,0 +1,75 @@
+---
+title: Mercury
+description: Fast, drop-in CQL evaluation for FHIR quality measures. The Community Edition is free to self-host.
+template: splash
+hero:
+  tagline: A CQL evaluation engine for FHIR quality measures, built in Rust. It speaks the same FHIR CQF API as the reference stack, so it drops into the pipeline you already run — only far faster. Community Edition is free to self-host.
+  image:
+    file: ../../assets/logo.png
+  actions:
+    - text: Quickstart
+      link: /quickstart
+      icon: right-arrow
+      variant: primary
+    - text: What you get for free
+      link: '#whats-in-the-community-edition'
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkCard, Aside, Badge } from '@astrojs/starlight/components';
+import { withBase } from '../../utils/base';
+
+:::note[Limited release]
+Mercury is currently available to select partners. There's no public download yet — [register your interest](https://getcql.com) to get Community Edition access. This site documents the free, self-hosted experience.
+:::
+
+## Why Mercury
+
+<CardGrid>
+  <Card title="Fast" icon="rocket">
+    Rebuilt in Rust on Actix. In early side-by-side benchmarks, one to two orders of magnitude faster than CQF Ruler, workload depending. <Badge text="preliminary" variant="caution" />
+  </Card>
+  <Card title="Drop-in" icon="random">
+    The same FHIR CQF API and CLI contract as the reference stack. Point your existing tools at a new URL — no rewrites.
+  </Card>
+  <Card title="Simple to operate" icon="puzzle">
+    One binary, one container, no JVM. Fewer services to deploy, monitor, and keep alive. Durable local persistence.
+  </Card>
+  <Card title="Validated" icon="open-book">
+    Checked against the HL7 CQL 1.5.2 language test suite. See <a href={withBase('/support/conformance')}>Conformance &amp; correctness</a>.
+  </Card>
+</CardGrid>
+
+## What's in the Community Edition
+
+The Community Edition is the whole engine, free to run in your own infrastructure. There are no feature gates on the core.
+
+- The full Mercury CQL evaluation engine.
+- **FHIR CQF REST API:** `/metadata`, `Library` and `Measure` CRUD, and `$evaluate` — plus `$data-requirements` and `$package` stubs for harness compatibility.
+- **A broader REST surface** under `/api` and `/fhir`: `/health` and `/ready` checks, `/execute`, `/translate`, `/query`, library and value-set management, and an `/openapi` spec.
+- **Direct CQL compilation,** with ELM XML accepted as an alternative input.
+- **Durable local persistence** — loaded libraries, measures, and ingested data survive restarts.
+- **CLI tools:** `serve`, `run`, and `lang-tests` for conformance.
+- **Structured logging** (pretty or JSON) with configurable levels.
+- **Single binary and Docker image;** composes with existing MCT and facility FHIR servers.
+
+<Aside type="tip" title="Prefer one-click?">
+The same free engine is also offered as a one-click AWS Marketplace package for teams who'd rather not build the deployment themselves.
+</Aside>
+
+## Start here
+
+<CardGrid>
+  <LinkCard title="Quickstart" description="From zero to a first evaluation you can compare against your reference engine." href={withBase('/quickstart')} />
+  <LinkCard title="Running the containers" description="The drop-in Measure Calculator stack, and running the server directly." href={withBase('/containers')} />
+  <LinkCard title="Loading data: preload vs inline" description="Two ways to get patient data into an evaluation — and when to use each." href={withBase('/loading-data')} />
+  <LinkCard title="Mounting your data drive" description="Keep libraries, measures, and data across restarts with a mounted volume." href={withBase('/data-persistence')} />
+</CardGrid>
+
+## Beyond the free core
+
+The Community Edition covers evaluation end to end. Optional **add-on packs** layer extra capability on top of the same engine — they're **additive and independent, not tiers**: Connect (integration & bulk data), Insight (observability), HA (reliability), Security (identity & governance), and Trust / Quality (data-quality scoring). All are **in development**. Nothing on this docs site requires them.
+
+## Getting help
+
+Community Edition support is **self-service**: this documentation site, plus a public issue tracker for bugs and questions (best-effort, no response-time guarantee). Every page has a **Report an issue** button. Guaranteed response times and hands-on help are available as paid enterprise support.

@@ -1,0 +1,89 @@
+---
+title: "REST surface (/api, /fhir)"
+description: Beyond the CQF operations, Mercury exposes a broader REST surface — health, execute, translate, query, OpenAPI, and standards-facing FHIR routes.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Alongside the [CQF operations](/reference/cqf-api), Mercury exposes a broader REST surface under `/api` (Mercury-native operations) and `/fhir` (standards-facing routes). This page covers the parts included in the free Community Edition.
+
+## Health & readiness
+
+Liveness and readiness checks for probes, healthchecks, and load balancers.
+
+```bash
+curl -fsS http://127.0.0.1:8080/api/health
+curl -fsS http://127.0.0.1:8080/api/ready
+```
+
+## OpenAPI
+
+Fetch the machine-readable API description to generate clients or explore endpoints.
+
+```bash
+curl http://127.0.0.1:8080/api/openapi
+```
+
+## Execute
+
+Run an evaluation through the Mercury-native operation path (an alternative to the CQF `$evaluate` operation).
+
+```bash
+POST /api/execute
+Content-Type: application/json
+```
+
+<Aside type="note">
+Request and response shapes are described in the [OpenAPI spec](#openapi) served by your running instance — always the source of truth for your build.
+</Aside>
+
+## Translate
+
+Translate CQL to ELM without executing it — useful for validating that a library compiles.
+
+```bash
+POST /api/translate
+Content-Type: application/cql
+```
+
+## Query
+
+Run queries over the loaded resource corpus.
+
+```bash
+POST /api/query
+Content-Type: application/json
+```
+
+## Library & value-set management
+
+Manage libraries and value sets through the `/api` surface (in addition to the FHIR `Library` CRUD under `/cqf`). Value sets supply the codes your measures test against.
+
+```bash
+# Shapes are defined in the OpenAPI spec for your build
+GET  /api/libraries
+GET  /api/valuesets
+```
+
+## Standards-facing FHIR routes
+
+The `/fhir` base path hosts standards-oriented endpoints, including the capability statement:
+
+```bash
+curl http://127.0.0.1:8080/fhir/metadata
+```
+
+<Aside type="caution" title="Bulk, connectors & auth are add-on packs">
+Some capabilities are **not** part of the free core and appear as add-on packs (in development):
+
+- **Bulk import/export, server connectors, streaming, and warehouse adapters** → the **Connect** pack.
+- **Metrics, dashboards, tracing, and lineage** → the **Insight** pack.
+- **Authentication, RBAC, secrets, audit logging, and library signing** → the **Security** pack.
+
+Community Edition ships without built-in authentication — run it on a trusted network behind your own reverse proxy or API gateway. See [Troubleshooting & FAQ](/support/troubleshooting).
+</Aside>
+
+## Next steps
+
+- [CQF API (/cqf)](/reference/cqf-api) — the measure-evaluation operations.
+- [CLI reference](/reference/cli) — `serve`, `run`, `lang-tests`.

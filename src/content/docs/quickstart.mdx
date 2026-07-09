@@ -1,0 +1,99 @@
+---
+title: Quickstart
+description: From zero to a first CQL evaluation you can compare against your reference engine — in about fifteen minutes.
+---
+
+import { Steps, Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+The fastest honest test of Mercury is **parity plus speed**: run the same libraries and patients through Mercury and your current engine, and compare. This page gets you to a first result.
+
+## Prerequisites
+
+- **Docker** (to run the container) *or* the **Mercury binary** (to run it directly).
+- The **CQL libraries** you already use — or their compiled ELM XML.
+- A **FHIR patient bundle** and any value sets the measure under test needs.
+- *Optional:* your existing reference stack, running, for a side-by-side comparison.
+
+## The happy path
+
+<Steps>
+
+1. **Start the server.**
+
+   <Tabs>
+     <TabItem label="Docker">
+     ```bash
+     docker run --rm -p 8080:8080 mercury serve --host 0.0.0.0 --port 8080
+     ```
+     </TabItem>
+     <TabItem label="Binary">
+     ```bash
+     mercury serve --host 127.0.0.1 --port 8080
+     ```
+     </TabItem>
+   </Tabs>
+
+   Mercury exposes its routes under the base paths `/cqf`, `/api`, and `/fhir`. Confirm it's up:
+
+   ```bash
+   curl -fsS http://127.0.0.1:8080/api/health
+   ```
+
+2. **Load your data** — POST a FHIR bundle.
+
+   ```bash
+   curl -X POST http://127.0.0.1:8080/cqf/data/bundle \
+     -H "Content-Type: application/fhir+json" \
+     --data @patients.bundle.json
+   ```
+
+3. **Load your library** — CQL or ELM (returns `201`).
+
+   ```bash
+   curl -X POST http://127.0.0.1:8080/cqf/Library \
+     -H "Content-Type: application/fhir+json" \
+     --data @Test.Library.json
+   ```
+
+4. **Execute** — evaluate for a subject and expression (returns `200` with a `Parameters` resource).
+
+   ```bash
+   curl "http://127.0.0.1:8080/cqf/Library/Test/\$evaluate?subject=Patient/123&expression=InDenominator"
+   ```
+
+</Steps>
+
+<Aside type="tip" title="Expected result">
+A FHIR `Parameters` resource whose `evaluate` part lists each expression and its value — for example `InDenominator → "true"`.
+</Aside>
+
+## One-shot: the `run` command
+
+Prefer a single command? The CLI `run` command loads data, loads the library, and executes against a running server in one call. Data is supplied **inline** with the request and isn't persisted — ideal for quick checks and CI.
+
+```bash
+mercury run \
+  --base-url http://127.0.0.1:8080 \
+  --data bundle.json \
+  --valueset valuesets.json \
+  --operation Test:1.0.0:InDenominator \
+  --cql Test.cql \
+  --context patient-1 \
+  --parameter "Measurement Period_start:2025-01-01:DateTime" \
+  --parameter "Measurement Period_end:2026-01-01:DateTime"
+```
+
+See the difference between loading data ahead of time and passing it inline in [Loading data: preload vs inline](/loading-data).
+
+## What success looks like
+
+- Mercury returns the **same population results** as your reference engine for the same libraries and patients.
+- Your existing **MCT or harness runs unchanged** against Mercury's base URL.
+- Evaluation **latency and throughput improve** measurably on *your* workload.
+
+## Next steps
+
+- [Running the containers](/containers) — the full drop-in stack and its ports.
+- [Mounting your data drive](/data-persistence) — keep state across restarts.
+- [CQF API reference](/reference/cqf-api) — every endpoint you just used.
+- Hit a snag? [Troubleshooting & FAQ](/support/troubleshooting).

@@ -1,0 +1,20 @@
+---
+/**
+ * Footer override: renders the default Starlight footer (prev/next nav,
+ * last-updated, etc.) and adds a per-page "Report an issue" button whose
+ * GitHub issue title is prefilled with the current page title.
+ */
+import Default from '@astrojs/starlight/components/Footer.astro';
+import ReportIssue from './ReportIssue.astro';
+
+// starlightRoute is available on Astro.locals in current Starlight versions.
+// Optional-chained so the button still renders if the shape ever changes.
+const route = (Astro.locals as any).starlightRoute;
+const pageTitle: string = route?.entry?.data?.title ?? '';
+---
+
+<div class="mercury-footer-actions">
+  <ReportIssue pageTitle={pageTitle} />
+</div>
+
+<Default><slot /></Default>

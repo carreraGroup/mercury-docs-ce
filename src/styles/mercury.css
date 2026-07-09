@@ -1,0 +1,109 @@
+/* ───────────────────────────────────────────────────────────────────────
+   Mercury theme for Starlight
+   IBM Plex, clean technical docs, blue accent (#1B6FC4), lots of
+   whitespace, dark code blocks. Light-first, with
+   a tuned dark variant so the theme toggle still looks right.
+   ─────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --sl-font: 'IBM Plex Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --sl-font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Accent (shared defaults; overridden per theme below) */
+  --sl-color-accent-low: #12385f;
+  --sl-color-accent: #1b6fc4;
+  --sl-color-accent-high: #cfe0f4;
+
+  --sl-nav-height: 3.75rem;
+}
+
+/* ── Light theme — the brand match ─────────────────────────────────────── */
+:root[data-theme='light'] {
+  --sl-color-accent-low: #eaf1fa;
+  --sl-color-accent: #1b6fc4;
+  --sl-color-accent-high: #14538f;
+  --sl-color-text-accent: #1b6fc4;
+
+  /* In Starlight light theme, "white" = highest-contrast ink, "black" = bg */
+  --sl-color-white: #0e1520; /* headings / primary text */
+  --sl-color-gray-1: #1c2430;
+  --sl-color-gray-2: #3a424e; /* body text */
+  --sl-color-gray-3: #5a626d;
+  --sl-color-gray-4: #8a929c; /* muted */
+  --sl-color-gray-5: #b9c0c8;
+  --sl-color-gray-6: #e7e9ed; /* card / hairline borders */
+  --sl-color-gray-7: #f2f3f6;
+  --sl-color-black: #fcfcfd; /* page background */
+
+  --sl-color-bg: #fcfcfd;
+  --sl-color-bg-nav: rgba(252, 252, 253, 0.86);
+  --sl-color-bg-sidebar: #fcfcfd;
+  --sl-color-hairline: #e7e9ed;
+  --sl-color-hairline-light: #eef0f3;
+  --sl-color-hairline-shade: #eef0f3;
+}
+
+/* ── Dark theme — same accent, cool ink ────────────────────────────────── */
+:root[data-theme='dark'] {
+  --sl-color-accent-low: #10243b;
+  --sl-color-accent: #2f86e0;
+  --sl-color-accent-high: #cfe3fb;
+  --sl-color-text-accent: #6bb0f0;
+
+  --sl-color-bg: #0e1520;
+  --sl-color-bg-nav: rgba(14, 21, 32, 0.8);
+  --sl-color-bg-sidebar: #0c121b;
+}
+
+/* ── Type polish ───────────────────────────────────────────────────────── */
+.sl-markdown-content h1,
+.sl-markdown-content h2,
+h1,
+h2 {
+  letter-spacing: -0.02em;
+}
+.sl-markdown-content h1 {
+  letter-spacing: -0.025em;
+}
+
+/* Mono eyebrow feel for the site title tagline */
+.site-title span {
+  letter-spacing: -0.01em;
+}
+
+/* Inline code a touch smaller, mono */
+.sl-markdown-content code:not(:where(.expressive-code *)) {
+  font-size: 0.88em;
+  font-family: var(--sl-font-mono);
+}
+
+/* ── "Report an issue" button (rendered in the footer + inline) ────────── */
+.report-issue {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2rem;
+  padding: 8px 14px;
+  border: 1px solid var(--sl-color-gray-6);
+  border-radius: 7px;
+  font-size: 0.82rem;
+  font-family: var(--sl-font-mono);
+  line-height: 1;
+  color: var(--sl-color-text-accent);
+  text-decoration: none;
+  background: var(--sl-color-bg);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.report-issue:hover {
+  border-color: var(--sl-color-accent);
+  background: var(--sl-color-accent-low);
+}
+.report-issue svg {
+  width: 1em;
+  height: 1em;
+}
+
+/* Slightly calmer card borders */
+.card {
+  border-color: var(--sl-color-gray-6);
+}

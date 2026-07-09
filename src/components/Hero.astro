@@ -1,0 +1,24 @@
+---
+/**
+ * Hero override: renders the default Starlight hero, but rewrites internal
+ * hero.actions links (frontmatter `link: /quickstart`) to include the site's
+ * base path. Starlight passes hero action hrefs straight through with no
+ * base handling — external links and same-page hash links are left as-is.
+ */
+import Default from '@astrojs/starlight/components/Hero.astro';
+import { withBase } from '../utils/base';
+
+const { data } = Astro.locals.starlightRoute.entry;
+const hero = data.hero;
+
+if (hero?.actions) {
+  hero.actions = hero.actions.map((action) => {
+    if (action.link.startsWith('/') && !action.link.startsWith('//')) {
+      return { ...action, link: withBase(action.link) };
+    }
+    return action;
+  });
+}
+---
+
+<Default />

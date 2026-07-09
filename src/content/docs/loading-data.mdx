@@ -1,0 +1,76 @@
+---
+title: "Loading data: preload vs inline"
+description: Two ways to get patient data into a CQL evaluation — preload it into the server, or pass it inline with each request — and when to use each.
+---
+
+import { Aside, CardGrid, Card } from '@astrojs/starlight/components';
+
+Before Mercury can evaluate a measure for a patient, it needs the patient's FHIR resources. There are two patterns for getting them there. They're not mutually exclusive — most teams use both, for different jobs.
+
+## The two patterns
+
+<CardGrid>
+  <Card title="Preload" icon="open-book">
+    Load data **into the server once**, then evaluate against it by `subject` as many times as you like. Data is stored in Mercury's durable local corpus and **survives restarts**.
+  </Card>
+  <Card title="Inline" icon="rocket">
+    Supply data **with each request** as a throwaway execution. Nothing is persisted — the run is self-contained and reproducible.
+  </Card>
+</CardGrid>
+
+## Preload — load once, evaluate many
+
+Post a FHIR bundle to the server, then reference patients by `subject` on `$evaluate`. This is the right pattern for **population runs, repeated evaluations, and anything where the same data is reused.**
+
+```bash
+# 1. Load the data into the server's corpus
+curl -X POST http://127.0.0.1:8080/cqf/data/bundle \
+  -H "Content-Type: application/fhir+json" \
+  --data @patients.bundle.json
+
+# 2. Evaluate by subject — the data is already there
+curl "http://127.0.0.1:8080/cqf/Library/Test/\$evaluate?subject=Patient/123&expression=InDenominator"
+```
+
+Because the corpus is persistent, the loaded data is still available after a restart — provided you've mounted a volume for it. See [Mounting your data drive](/data-persistence).
+
+<Aside type="tip">
+Preload once, then iterate on **measure logic** by re-POSTing libraries and re-running `$evaluate` — you don't need to resend the patient data each time.
+</Aside>
+
+## Inline — data with the request
+
+The CLI `run` command bundles data, library, and operation into a **single execution** against a running server. Nothing persists, so each run is isolated and easy to reproduce — ideal for **quick tests, CI checks, and one-off comparisons.**
+
+```bash
+mercury run \
+  --base-url http://127.0.0.1:8080 \
+  --data bundle.json \
+  --valueset valuesets.json \
+  --operation Test:1.0.0:InDenominator \
+  --cql Test.cql \
+  --context patient-1
+```
+
+`--valueset` and `--parameter` are repeatable; see the [CLI reference](/reference/cli).
+
+## Which should I use?
+
+| If you want to… | Use |
+| --- | --- |
+| Run a measure across many patients | **Preload** |
+| Re-evaluate the same cohort repeatedly | **Preload** |
+| Keep data available across restarts | **Preload** (+ a [mounted volume](/data-persistence)) |
+| Run a fast, isolated check in CI | **Inline** (`mercury run`) |
+| Reproduce a single result exactly | **Inline** |
+| Avoid leaving any state on the server | **Inline** |
+
+<Aside type="caution" title="Bulk & connector loading">
+High-volume and connector-based ingestion (FHIR bulk import/export, warehouse and streaming connectors) is part of the **Connect** add-on pack, which is in development. The patterns on this page cover everything the free Community Edition needs to evaluate measures.
+</Aside>
+
+## Next steps
+
+- [Mounting your data drive](/data-persistence) — make preloaded data durable.
+- [CQF API reference](/reference/cqf-api) — `/cqf/data/bundle`, `Library`, `$evaluate`.
+- [CLI reference](/reference/cli) — every flag for `mercury run`.

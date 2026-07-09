@@ -1,0 +1,43 @@
+name: 🐞 Bug report
+description: Something in Mercury Community Edition isn't working as documented.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping improve Mercury. Please share enough for us to reproduce.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, and what did you expect instead?
+      placeholder: I ran `$evaluate` and got a 404, but the Library was loaded…
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: The commands or requests you ran (redact anything sensitive).
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Mercury version / image tag
+      placeholder: e.g. mercury:0.x or commit sha
+  - type: dropdown
+    id: how-run
+    attributes:
+      label: How are you running it?
+      options:
+        - Docker (drop-in stack)
+        - Docker (image only)
+        - Binary
+        - Other
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Paste any error output. Set `--log-level debug` for more detail.
+      render: shell

@@ -1,0 +1,83 @@
+---
+title: CLI reference
+description: The mercury command line — serve the REST server, run a single operation, and run the CQL language tests.
+---
+
+The `mercury` CLI has three commands: `serve` (run the REST server), `run` (execute a single operation against a running server), and `lang-tests` (run the CQL language test suite).
+
+```bash
+mercury --help
+```
+
+## Global options
+
+Available on every command:
+
+| Option | Values |
+| --- | --- |
+| `--log-level` | `trace` \| `debug` \| `info` \| `warn` \| `error` |
+| `--log-format` | `pretty` \| `json` |
+| `--no-banner` | suppress the startup banner |
+
+`MERCURY_LOG_LEVEL` is honored as an environment variable equivalent to `--log-level`.
+
+```bash
+MERCURY_LOG_LEVEL=debug mercury serve
+mercury --log-level trace --log-format json run --help
+```
+
+## `serve`
+
+Run the Mercury REST server.
+
+```bash
+mercury serve --host 127.0.0.1 --port 8080
+```
+
+Routes are served under `/cqf`, `/api`, and `/fhir`. See [Running the containers](/containers) and [Mounting your data drive](/data-persistence) for deployment.
+
+## `run`
+
+Execute a single operation workflow against a **running** server. Data is supplied inline and isn't persisted — see [Loading data: preload vs inline](/loading-data).
+
+```bash
+mercury run \
+  --base-url http://127.0.0.1:8080 \
+  --data /path/to/bundle.json \
+  --valueset /path/to/valuesets.json \
+  --operation Test:1.0.0:InDenominator \
+  --cql /path/to/Test.cql \
+  --context patient-1 \
+  --parameter "Measurement Period_start:2025-01-01:DateTime" \
+  --parameter "Measurement Period_end:2026-01-01:DateTime"
+```
+
+Use ELM XML instead of CQL by swapping `--cql` for one or more `--elm` inputs:
+
+```bash
+mercury run \
+  --base-url http://127.0.0.1:8080 \
+  --data /path/to/bundle.json \
+  --valueset /path/to/valuesets.json \
+  --operation Test:1.0.0:InDenominator \
+  --elm /path/to/FHIRHelpers.xml \
+  --elm /path/to/Test.xml \
+  --context patient-1
+```
+
+**Notes**
+
+- `--operation` uses the form `libraryId:version:definition` (e.g. `Test:1.0.0:InDenominator`).
+- `--valueset` is repeatable.
+- `--parameter` (alias `--param`) is repeatable; format is `name:value:type`.
+- Use CQL-only *or* ELM-only per run.
+
+## `lang-tests`
+
+Run the CQL language test suite and write a summary. This is how the conformance numbers are reproduced.
+
+```bash
+mercury lang-tests --dir cql-tests/tests/cql
+```
+
+See [Conformance & correctness](/support/conformance) for what the results mean.

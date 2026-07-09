@@ -1,0 +1,27 @@
+---
+/**
+ * A styled "Report an issue" button that deep-links to GitHub's prefilled
+ * new-issue form. No backend required — works on static GitHub Pages.
+ *
+ * Usage in MDX:  <ReportIssue pageTitle="Quickstart" />
+ * It is also rendered automatically on every page by Footer.astro.
+ */
+import { Icon } from '@astrojs/starlight/components';
+import { GITHUB_REPO } from '../config.ts';
+
+interface Props {
+  pageTitle?: string;
+  label?: string;
+}
+
+const { pageTitle = '', label = 'Report an issue with this page' } = Astro.props;
+
+const title = encodeURIComponent(`[docs] ${pageTitle}`.trim());
+// template + labels prefill the issue form defined in .github/ISSUE_TEMPLATE/
+const href = `https://github.com/${GITHUB_REPO}/issues/new?labels=docs&template=docs_issue.yml&title=${title}`;
+---
+
+<a class="report-issue" href={href} target="_blank" rel="noopener">
+  <Icon name="github" size="1em" />
+  <span>{label}</span>
+</a>

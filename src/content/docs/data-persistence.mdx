@@ -1,0 +1,87 @@
+---
+title: Mounting your data drive
+description: Mercury keeps durable local state. Mount a volume so loaded libraries, measures, and patient data survive restarts — and back it up.
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+Mercury Core keeps **durable local state** — the libraries, measures, and patient data you load persist to disk and survive a restart. In a container, that only holds if you point the state directory at a **mounted volume**. Without one, everything you loaded disappears when the container is recreated.
+
+## The idea
+
+Map a location that lives *outside* the container (a Docker named volume, or a host directory) to Mercury's data directory *inside* the container. State written there survives `docker compose down`, image upgrades, and host reboots, and can be backed up with your normal tooling.
+
+<Aside type="note">
+Mercury writes its persistent state under **`/var/lib/mercury`** inside the container.
+</Aside>
+
+## Docker Compose
+
+Add a named volume and mount it at the data directory:
+
+```yaml
+services:
+  mercury:
+    image: mercury            # [TBD: your image reference]
+    command: serve --host 0.0.0.0 --port 8080
+    ports:
+      - "8080:8080"
+    volumes:
+      - mercury-data:/var/lib/mercury
+
+volumes:
+  mercury-data:
+```
+
+## `docker run`
+
+```bash
+docker run --rm \
+  -p 8080:8080 \
+  -v mercury-data:/var/lib/mercury \
+  mercury serve --host 0.0.0.0 --port 8080
+```
+
+Prefer a host directory (easier to inspect and back up) instead of a named volume:
+
+```bash
+docker run --rm \
+  -p 8080:8080 \
+  -v /srv/mercury/data:/var/lib/mercury \
+  mercury serve --host 0.0.0.0 --port 8080
+```
+
+## Verify it persists
+
+<Steps>
+
+1. Load a library or a data bundle (see [Loading data](/loading-data)).
+2. Recreate the container:
+   ```bash
+   docker compose down && docker compose up -d
+   ```
+3. Re-run an `$evaluate` for the same subject — it should still resolve without reloading.
+
+</Steps>
+
+## Backups
+
+Because state is a directory on a volume, back it up the way you back up any volume — snapshot the named volume, or copy the host directory while the server is stopped or quiesced.
+
+```bash
+# Example: tar a host-mounted data directory
+tar czf mercury-data-$(date +%F).tar.gz -C /srv/mercury data
+```
+
+<Aside type="tip" title="Bulk artifacts">
+If you use bulk data features, temporary bulk artifacts are written to a separate directory, configurable via `MERCURY_BULK_DATA_DIR`. Those are transient and don't need backing up — but you can mount them elsewhere if you'd like them to survive.
+</Aside>
+
+<Aside type="caution" title="Replication & disaster recovery">
+Built-in replication, failover, and backup/restore orchestration are part of the **HA** add-on pack (in development). Community Edition persistence is single-node; use your platform's volume backup and restore for durability.
+</Aside>
+
+## Next steps
+
+- [Loading data: preload vs inline](/loading-data) — what actually gets persisted.
+- [Running the containers](/containers) — where the volume fits in the stack.
