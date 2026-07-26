@@ -1,0 +1,21 @@
+{
+  "resourceType": "Library",
+  "id": "QuickstartLibrary",
+  "url": "http://example.org/fhir/Library/QuickstartLibrary",
+  "version": "1.0.0",
+  "status": "active",
+  "type": {
+    "coding": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/library-type",
+        "code": "logic-library"
+      }
+    ]
+  },
+  "content": [
+    {
+      "contentType": "text/cql",
+      "data": "bGlicmFyeSBRdWlja3N0YXJ0TGlicmFyeSB2ZXJzaW9uICcxLjAuMCcKdXNpbmcgRkhJUiB2ZXJzaW9uICc0LjAuMScKY29udGV4dCBQYXRpZW50CgpkZWZpbmUgIlBhdGllbnQgSWQiOgogIFBhdGllbnQuaWQKCmRlZmluZSAiSW5pdGlhbCBQb3B1bGF0aW9uIjoKICBQYXRpZW50LmlkID0gJ3F1aWNrc3RhcnQtcGF0aWVudCcKCmRlZmluZSAiTnVtZXJhdG9yIjoKICAiSW5pdGlhbCBQb3B1bGF0aW9uIiBhbmQgUGF0aWVudC5nZW5kZXIgPSAnZmVtYWxlJwo="
+    }
+  ]
+}

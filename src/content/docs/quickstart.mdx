@@ -9,20 +9,30 @@ The fastest honest test of Mercury is **parity plus speed**: run the same librar
 
 ## Prerequisites
 
-- **Docker** (to run the container) *or* the **Mercury binary** (to run it directly).
+- **Docker**.
+- The private registry **image URI** and credentials you were sent.
 - The **CQL libraries** you already use — or their compiled ELM XML.
 - A **FHIR patient bundle** and any value sets the measure under test needs.
 - *Optional:* your existing reference stack, running, for a side-by-side comparison.
 
-## Build the local image
+## Get the image
 
-Until your team has a published registry image, use the local image name `mercury:community` throughout these docs:
+Community Edition is distributed as a container image from a private registry. Sign in with the credentials you were sent, then pull:
 
 ```bash
-docker build -t mercury:community .
+docker login <registry-host>
+docker pull IMAGE_URI
 ```
 
-If you later pull a published image such as `ghcr.io/EXAMPLE/mercury:2.1.0`, replace `mercury:community` consistently in the examples below.
+Examples below use `MERCURY_IMAGE`:
+
+```bash
+export MERCURY_IMAGE=IMAGE_URI
+```
+
+<Aside type="note" title="Limited release">
+There is no public download yet. If you do not have credentials, [request access](https://getcql.com/#request-access).
+</Aside>
 
 ## The happy path
 
@@ -33,10 +43,14 @@ If you later pull a published image such as `ghcr.io/EXAMPLE/mercury:2.1.0`, rep
    <Tabs>
      <TabItem label="Docker">
      ```bash
+     docker rm -f mercury-quickstart >/dev/null 2>&1 || true
      docker run --rm \
+       -d \
+       --name mercury-quickstart \
        -p 8080:8080 \
        -v mercury-data:/var/lib/mercury \
-       mercury:community
+       "$MERCURY_IMAGE"
+     sleep 3
      ```
      </TabItem>
      <TabItem label="Binary">
@@ -57,49 +71,68 @@ If you later pull a published image such as `ghcr.io/EXAMPLE/mercury:2.1.0`, rep
    ```json
    {
      "status": "UP",
-     "version": "2.1.0",
+     "version": "<your version>",
      "edition": "community",
      "packs": ["core"]
    }
    ```
 
-2. **Load your data** — POST a FHIR bundle.
+   The exact `version` value reflects the build you pulled.
+
+2. **Download the fixture files** — or substitute your own bundle and library.
+
+   ```bash
+   export DOCS_BASE_URL=https://carreraGroup.github.io/mercury-docs-ce
+   curl -fsS -o patient-bundle.json \
+     "$DOCS_BASE_URL/quickstart/patient-bundle.json"
+   curl -fsS -o QuickstartLibrary.Library.json \
+     "$DOCS_BASE_URL/quickstart/QuickstartLibrary.Library.json"
+   ```
+
+3. **Load data** — POST a FHIR bundle.
 
    ```bash
    curl -X POST http://127.0.0.1:8080/cqf/data/bundle \
      -H "Content-Type: application/fhir+json" \
-     --data @patients.bundle.json
+     --data @patient-bundle.json
    ```
 
-3. **Load your library** — CQL or ELM (returns `201`).
+4. **Load a library** — CQL or ELM embedded in a FHIR `Library` resource.
 
    ```bash
    curl -X POST http://127.0.0.1:8080/cqf/Library \
      -H "Content-Type: application/fhir+json" \
-     --data @Test.Library.json
+     --data @QuickstartLibrary.Library.json
    ```
 
-4. **Execute** — evaluate for a subject and expression (returns `200` with a `Parameters` resource).
+5. **Execute** — evaluate for a subject and expression.
 
    ```bash
-   curl "http://127.0.0.1:8080/cqf/Library/Test/\$evaluate?subject=Patient/123&expression=InDenominator"
+   curl "http://127.0.0.1:8080/cqf/Library/QuickstartLibrary/\$evaluate?subject=Patient/quickstart-patient&expression=Initial%20Population"
+   ```
+
+6. **Clean up when finished.**
+
+   ```bash
+   docker rm -f mercury-quickstart
    ```
 
 </Steps>
 
 <Aside type="tip" title="Expected result">
-A FHIR `Parameters` resource whose `evaluate` part lists each expression and its value — for example `InDenominator → "true"`.
+A FHIR `Parameters` resource whose `evaluate` part lists `Initial Population` with `valueBoolean: true`.
 </Aside>
 
-## Fixture smoke test
+## Contributors / Source Repo
 
-The repository includes a fixture-based happy path under `examples/quickstart` and a Docker smoke script that builds `mercury:community`, starts the server, checks `/api/health`, loads the bundle and library, runs `$evaluate`, and cleans up:
+If you have the source repository, you can build a local contributor image and run the in-repo smoke:
 
 ```bash
+docker build -t mercury:community .
 scripts/quickstart_smoke.sh
 ```
 
-The expected final line is `Quickstart smoke passed`.
+Partners using only an image URI do not need the source repository.
 
 ## One-shot: the `run` command
 

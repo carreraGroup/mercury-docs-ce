@@ -7,6 +7,12 @@ import { Aside, Steps } from '@astrojs/starlight/components';
 
 Mercury Core keeps **durable local state** — the libraries, measures, and patient data you load persist to disk and survive a restart. In a container, that only holds if you point the state directory at a **mounted volume**. Without one, everything you loaded disappears when the container is recreated.
 
+Examples below use the image URI you were given:
+
+```bash
+export MERCURY_IMAGE=IMAGE_URI
+```
+
 ## The idea
 
 Map a location that lives *outside* the container (a Docker named volume, or a host directory) to Mercury's data directory *inside* the container. State written there survives `docker compose down`, image upgrades, and host reboots, and can be backed up with your normal tooling.
@@ -22,7 +28,7 @@ Add a named volume and mount it at the data directory:
 ```yaml
 services:
   mercury:
-    image: mercury:community
+    image: ${MERCURY_IMAGE:?set MERCURY_IMAGE}
     ports:
       - "8080:8080"
     volumes:
@@ -38,7 +44,7 @@ volumes:
 docker run --rm \
   -p 8080:8080 \
   -v mercury-data:/var/lib/mercury \
-  mercury:community
+  "$MERCURY_IMAGE"
 ```
 
 Prefer a host directory (easier to inspect and back up) instead of a named volume:
@@ -47,10 +53,8 @@ Prefer a host directory (easier to inspect and back up) instead of a named volum
 docker run --rm \
   -p 8080:8080 \
   -v /srv/mercury/data:/var/lib/mercury \
-  mercury:community
+  "$MERCURY_IMAGE"
 ```
-
-If you use a published image, replace `mercury:community` with the actual image URI, for example `ghcr.io/EXAMPLE/mercury:2.1.0`.
 
 ## Verify it persists
 

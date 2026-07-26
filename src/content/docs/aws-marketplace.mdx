@@ -8,7 +8,7 @@ import { Aside } from '@astrojs/starlight/components';
 Mercury is being prepared for paid AWS Marketplace Core delivery as both a container and an AMI. The intended Marketplace shape is contract pricing with 1-month and 12-month terms.
 
 <Aside type="caution" title="Listing status">
-Do not treat these commands as a live subscription path until your AWS Marketplace listing is published. The image URI, AMI id, product SKU, and License Manager values below are placeholders that the seller account owner must replace.
+This listing is not yet published. The values below are placeholders and will be replaced with subscription details when it goes live.
 </Aside>
 
 ## What the listing includes
@@ -19,27 +19,60 @@ Do not treat these commands as a live subscription path until your AWS Marketpla
 - No hourly metering, `RegisterUsage`, or `MeterUsage`.
 - No Interoperability, Observability, HA, Security, or Trust/Quality add-on packs in this Core listing.
 
-## Container placeholder
+## Container subscription path
 
-Use the in-repo ECS sample as an operator template after the human Marketplace workflow provides the final values:
+After the listing is live, the container path is:
 
-- Template: `deploy/aws-marketplace/container/cloudformation.yaml`
-- Image URI placeholder: `TODO-marketplace-container-image-uri`
-- Product SKU placeholder: `TODO-product-sku`
-- License fingerprint placeholder: `TODO-license-manager-issuer-fingerprint`
+1. Subscribe in AWS Marketplace and accept the 1-month or 12-month contract.
+2. Accept the AWS License Manager grant in the buyer account if AWS prompts for it.
+3. Create an ECS task role, EKS service account role, or equivalent role with License Manager permissions.
+4. Pull and run the Marketplace image URI supplied by the listing.
+5. Mount durable storage at `/var/lib/mercury`.
+6. Verify `/api/health`.
 
-The container mounts durable state at `/var/lib/mercury` and sets `MERCURY_EDITION=marketplace` as a consistency check. The binary itself must be built with the marketplace feature.
+Container placeholders:
 
-## AMI placeholder
+```text
+IMAGE_URI=<marketplace-image-uri>
+PRODUCT_SKU=<marketplace-product-sku>
+LICENSE_FINGERPRINT=<license-manager-issuer-fingerprint>
+```
 
-Use the in-repo AMI assets as operator templates after the human Marketplace workflow provides the final AMI id and SKU:
+Required environment:
 
-- Packer template: `deploy/aws-marketplace/ami/packer.pkr.hcl`
-- EC2 launch sample: `deploy/aws-marketplace/ami/launch-template.yaml`
-- AMI id placeholder: `TODO-marketplace-ami-id`
-- Product SKU placeholder: `TODO-product-sku`
+```text
+MERCURY_EDITION=marketplace
+AWS_MARKETPLACE_PRODUCT_SKU=PRODUCT_SKU
+AWS_LICENSE_MANAGER_KEY_FINGERPRINT=LICENSE_FINGERPRINT
+AWS_MARKETPLACE_ENTITLEMENT_NAME=MercuryCore
+MERCURY_MARKETPLACE_REFRESH_SECS=900
+```
+
+## AMI subscription path
+
+After the listing is live, the AMI path is:
+
+1. Subscribe in AWS Marketplace and accept the 1-month or 12-month contract.
+2. Accept the AWS License Manager grant in the buyer account if AWS prompts for it.
+3. Launch the subscribed AMI on an x86_64 EC2 instance with an instance profile that can call License Manager.
+4. Place the instance on a private subnet and allow TCP 8080 only from trusted clients.
+5. Mount durable production storage at `/var/lib/mercury`.
+6. Write entitlement environment values to `/etc/mercury/marketplace.env` and restart `mercury`.
+7. Verify `/api/health`.
+
+AMI placeholders:
+
+```text
+AMI_ID=<marketplace-ami-id>
+PRODUCT_SKU=<marketplace-product-sku>
+LICENSE_FINGERPRINT=<license-manager-issuer-fingerprint>
+```
 
 Marketplace AMIs perform the same License Manager entitlement check as marketplace containers. If entitlement fails, the service should not be considered ready.
+
+<Aside type="note" title="Seller/operator templates">
+The seller maintains reference ECS/Fargate and EC2 launch templates in the private engineering repo. Buyers should use the published listing usage instructions or templates provided with the subscription, not private repo paths.
+</Aside>
 
 ## Verify a running instance
 
@@ -52,11 +85,13 @@ Expected shape:
 ```json
 {
   "status": "UP",
-  "version": "2.1.0",
+  "version": "<your version>",
   "edition": "marketplace",
   "packs": ["core"]
 }
 ```
+
+The exact `version` value reflects the subscribed artifact.
 
 Verify the binary directly when you have shell access:
 
@@ -71,3 +106,4 @@ Marketplace artifacts should print `edition=marketplace`.
 - [Running the containers](/containers)
 - [Mounting your data drive](/data-persistence)
 - [Quickstart](/quickstart)
+- [FAQ & security](/support/faq)

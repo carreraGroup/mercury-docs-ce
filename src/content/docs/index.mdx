@@ -20,7 +20,7 @@ import { Card, CardGrid, LinkCard, Aside, Badge } from '@astrojs/starlight/compo
 import { withBase } from '../../utils/base';
 
 :::note[Limited release]
-Mercury is currently available to select partners. There's no public download yet — [register your interest](https://getcql.com) to get Community Edition access. This site documents the self-hosted Core experience.
+Mercury is currently available to select partners. There's no public download yet — [register your interest](https://getcql.com/#request-access) to get Community Edition access. This site documents the self-hosted Core experience.
 :::
 
 ## Why Mercury
@@ -57,6 +57,15 @@ The Community Edition runs Mercury Core for free in your own infrastructure unde
 Mercury is being prepared for paid AWS Marketplace Core offerings as both a container and an AMI. The planned listing shape is contract pricing for 1-month and 12-month terms only. There is no hourly metering path, and add-on packs are not included.
 </Aside>
 
+## What Mercury isn't
+
+- **No built-in authentication or RBAC.** Run Mercury on a private network behind your own gateway, service mesh, load balancer, or API gateway.
+- **No HIPAA attestation, BAA, or SOC 2 report.** Mercury is software you run in your own infrastructure, under your own compliance program and controls.
+- **Not a managed service.** You deploy, operate, monitor, patch, and back it up.
+- **Core only.** Integration, observability, HA, security, and data-quality packs are future add-ons, not included in Community or the AWS Marketplace Core listing.
+- **Closed source.** Community Edition is free to run under closed-source terms.
+- **x86_64 only today.**
+
 ## Start here
 
 <CardGrid>
@@ -64,6 +73,7 @@ Mercury is being prepared for paid AWS Marketplace Core offerings as both a cont
   <LinkCard title="Running the containers" description="The drop-in Measure Calculator stack, and running the server directly." href={withBase('/containers')} />
   <LinkCard title="Loading data: preload vs inline" description="Two ways to get patient data into an evaluation — and when to use each." href={withBase('/loading-data')} />
   <LinkCard title="Mounting your data drive" description="Keep libraries, measures, and data across restarts with a mounted volume." href={withBase('/data-persistence')} />
+  <LinkCard title="FAQ & security" description="Security, entitlement, support, and compliance boundaries." href={withBase('/support/faq')} />
 </CardGrid>
 
 ## Beyond Core
@@ -72,4 +82,4 @@ Mercury Core covers evaluation end to end. Optional **add-on packs** will layer 
 
 ## Getting help
 
-Community Edition support is **self-service**: this documentation site, docs repo issue forms where available, and [getcql.com](https://getcql.com) for access or private follow-up. Guaranteed response times and hands-on help are available as paid enterprise support.
+Community Edition support is **self-service**: this documentation site, docs repo issue forms where available, and [getcql.com](https://getcql.com/#request-access) for access or private follow-up. Guaranteed response times and hands-on support are planned as a paid offering.

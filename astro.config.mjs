@@ -89,6 +89,7 @@ export default defineConfig({
           label: 'Support',
           items: [
             { label: 'Troubleshooting & FAQ', slug: 'support/troubleshooting' },
+            { label: 'FAQ & security', slug: 'support/faq' },
             { label: 'Conformance & correctness', slug: 'support/conformance' },
             {
               label: 'Report an issue ↗',

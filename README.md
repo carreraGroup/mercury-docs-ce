@@ -36,7 +36,7 @@ Currently configured for the **`carreraGroup/mercury-docs-ce`** repo as a GitHub
 
 **To move to a custom domain later** (e.g. `docs.getcql.com`): set `SITE='https://docs.getcql.com'` and `BASE='/'` in `astro.config.mjs`, update the same two constants in `src/config.ts`, add a `public/CNAME` file containing the domain, and point its DNS at GitHub Pages. Content requires no changes.
 
-**Image convention:** customer examples build a local image as `mercury:community`. Replace it consistently with a real registry URI, such as `ghcr.io/EXAMPLE/mercury:2.1.0`, only after a published image exists.
+**Image convention:** customer examples use `IMAGE_URI` / `MERCURY_IMAGE` from a private registry or Marketplace subscription. Source builds such as `docker build -t mercury:community .` belong only in contributor notes for people with the private source repository.
 
 ---
 
@@ -95,7 +95,7 @@ mercury-docs/
 │       ├── loading-data.mdx
 │       ├── data-persistence.mdx
 │       ├── reference/{cqf-api,rest-api,cli}.mdx
-│       └── support/{troubleshooting,conformance}.mdx
+│       └── support/{troubleshooting,faq,conformance}.mdx
 ├── public/logo.png
 └── .github/
     ├── workflows/deploy.yml     # GitHub Pages deploy
@@ -109,7 +109,7 @@ mercury-docs/
 Load-bearing positioning — don't let edits drift:
 
 - **Limited release** — CTA is "register interest," not download. **No pricing.**
-- Free **Community Edition** (whole engine, self-host) + paid one-click **AWS Marketplace** package. Single binary/Docker, no JVM.
+- Free invite-only **Community Edition** Core image (self-hosted) + planned paid **AWS Marketplace Core** container and AMI listings on 1-month / 12-month contracts. Single binary/container, no JVM.
 - Add-on packs (**Connect, Insight, HA, Security, Trust/Quality**) are **additive & independent, not tiers**. All *in development*.
 - Speed claims are **preliminary** (~10–100× vs CQF Ruler) — always labelled.
 - Conformance: **1,783 of 1,795** CQL 1.5.2 cases passing (100% of executed).

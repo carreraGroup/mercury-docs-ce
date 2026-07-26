@@ -1,0 +1,50 @@
+---
+title: FAQ & security
+description: Security, entitlement, compliance, and support boundaries for Mercury Core.
+---
+
+Mercury Core is closed-source software you run in your own infrastructure. These answers cover the questions that usually come up during partner trials and AWS Marketplace review.
+
+## Does patient data leave my account?
+
+No. Mercury evaluates in-process against data you load. Community builds have no AWS entitlement client. Marketplace builds make AWS License Manager calls to verify subscription entitlement, but do not send patient data, measure content, library source, evaluation results, or telemetry to the seller.
+
+## What does the Marketplace entitlement check send?
+
+A Marketplace build calls AWS License Manager `CheckoutLicense` using your task role or instance profile. The call identifies the product SKU and entitlement name. It does not include PHI, CQL libraries, FHIR bundles, or result payloads.
+
+## Does Mercury include authentication or authorization?
+
+No. Mercury Core does not implement user authentication, API keys, RBAC, or audit logging. Run it on a private network behind your own authenticated gateway, service mesh, load balancer, or API gateway. Identity and governance are planned as a separate add-on pack and are not part of Community or Marketplace Core.
+
+## Is Mercury HIPAA-certified or SOC 2 audited?
+
+No. Mercury makes no HIPAA attestation, certification, BAA, SOC 2, HITRUST, or equivalent compliance claim. It is software you deploy and operate under your own compliance program, controls, AWS agreements, and risk assessment.
+
+## Is this a managed service?
+
+No. Mercury is not hosted or operated by the seller. You deploy, operate, monitor, patch, secure, and back up the instance or container in your own environment.
+
+## Which add-on packs are included?
+
+None. Community and the Path A AWS Marketplace listing are Core only. Interoperability, observability, HA, security, and data-quality packs are future add-ons. Marketplace Core ignores pack unlock environment variables.
+
+## What happens if a Marketplace subscription lapses?
+
+Marketplace artifacts fail closed. On startup or entitlement re-check failure, Mercury stops serving. Data on your mounted volume is untouched and remains under your control; correcting entitlement or IAM lets the service start again.
+
+## Can Marketplace Core run without AWS License Manager access?
+
+No. Marketplace builds require reachability to AWS License Manager in your Region. A VPC endpoint is enough; public internet egress is not required.
+
+## What architectures are supported?
+
+Current launch artifacts target x86_64 / linux-amd64.
+
+## Is the source code available?
+
+No. Mercury is closed source. Partners and subscribers receive a container image or AMI under the applicable license terms.
+
+## How do I get help?
+
+Community Edition is self-service through the docs and issue forms where available. For access or private follow-up, use [getcql.com](https://getcql.com/#request-access). Paid support with committed response times is planned as a separate offering.

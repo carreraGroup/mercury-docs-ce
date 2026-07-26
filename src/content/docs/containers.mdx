@@ -7,13 +7,15 @@ import { Tabs, TabItem, Aside } from '@astrojs/starlight/components';
 
 Mercury ships as a single binary and a Docker image. The quickest way to try it against a realistic pipeline is the drop-in Measure Calculator stack; for development you can also run the server on its own.
 
-Until your team publishes or receives a registry image, build locally and use `mercury:community` in examples:
+Pull the image you were given access to:
 
 ```bash
-docker build -t mercury:community .
+docker login <registry-host>
+docker pull IMAGE_URI
+export MERCURY_IMAGE=IMAGE_URI
 ```
 
-For a published image, replace `mercury:community` with your real image URI, for example `ghcr.io/EXAMPLE/mercury:2.1.0`.
+Examples below use `$MERCURY_IMAGE`. Paid AWS Marketplace subscribers use the Marketplace image URI from their subscription instead — see [AWS Marketplace](/aws-marketplace).
 
 ## The drop-in Measure Calculator stack
 
@@ -23,7 +25,7 @@ Mercury slots in as the **evaluator** inside a Measure Calculator environment, a
 # docker-compose.yml
 services:
   mercury:
-    image: mercury:community
+    image: ${MERCURY_IMAGE:?set MERCURY_IMAGE}
     ports:
       - "8090:8080"
     volumes:
@@ -54,8 +56,10 @@ volumes:
 ```
 
 ```bash
-docker compose up --build
+docker compose up
 ```
+
+Docker Compose reads `MERCURY_IMAGE` from your shell environment.
 
 **Ports it brings up:**
 
@@ -89,7 +93,7 @@ To check output parity, run your existing reference stack (the CQL translation s
   docker run --rm \
     -p 8080:8080 \
     -v mercury-data:/var/lib/mercury \
-    mercury:community
+    "$MERCURY_IMAGE"
   ```
   </TabItem>
 </Tabs>
@@ -108,13 +112,24 @@ curl -fsS http://localhost:8080/api/ready
 ```json
 {
   "status": "UP",
-  "version": "2.1.0",
+  "version": "<your version>",
   "edition": "community",
   "packs": ["core"]
 }
 ```
 
+The exact `version` value reflects the build you pulled.
+
 The image entrypoint already starts `mercury serve` with `HOST=0.0.0.0` and `PORT=8080`. Override `HOST`, `PORT`, `CQF_BASE_PATH`, `API_BASE_PATH`, or `FHIR_BASE_PATH` as environment variables only when you need non-default routing.
+
+## Contributors / Source Repo
+
+If you have the source repository, you can build a local contributor image:
+
+```bash
+docker build -t mercury:community .
+export MERCURY_IMAGE=mercury:community
+```
 
 ## Next steps
 
