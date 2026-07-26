@@ -1,8 +1,11 @@
 blank_issues_enabled: true
 contact_links:
-  - name: 💬 Question / usage help
-    url: https://github.com/carreraGroup/mercury-docs-ce/discussions
-    about: For how-to questions, use Discussions (enable it on the repo first). Bugs and docs issues go through the templates above.
-  - name: 🔑 Request early access / enterprise support
-    url: https://getcql.com
+  - name: 📝 Evaluation feedback (private)
+    url: https://docs.getcql.com/feedback
+    about: In the limited evaluation? Send feedback straight to the Mercury team — what you tried, what broke, parity notes.
+  - name: 🔑 Request access / enterprise support
+    url: https://getcql.com/#request-access
     about: Mercury is in limited release. Register your interest here.
+  - name: 📚 Documentation
+    url: https://docs.getcql.com/quickstart
+    about: The partner quickstart, API reference, and troubleshooting.

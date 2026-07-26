@@ -1,6 +1,6 @@
 # Mercury — Documentation Site
 
-The community documentation site for **Mercury**, the Rust-based CQL evaluation engine for FHIR quality measures. Built with **Astro + Starlight**, styled to match Mercury's brand, and set up to deploy free on **GitHub Pages**.
+The documentation site for **Mercury**, the Rust-based CQL evaluation engine for FHIR quality measures. Built with **Astro + Starlight**, styled to match Mercury's brand, and deployed on **GitHub Pages** at its canonical URL **<https://docs.getcql.com>**.
 
 It covers the free, self-hosted **Community Edition** experience: quickstart, running the containers, loading data, mounting your data drive, the CQF and REST APIs, the CLI, troubleshooting, and conformance. Nothing proprietary from the engine's source is included.
 
@@ -27,14 +27,15 @@ Search (offline, via Pagefind) is built in and works on the static build automat
 
 ## Deployment target
 
-Currently configured for the **`carreraGroup/mercury-docs-ce`** repo as a GitHub Pages project site:
+**Canonical URL: <https://docs.getcql.com>.** Hosting is **GitHub Pages** (repo `carreraGroup/mercury-docs-ce`, deployed by GitHub Actions) behind a custom domain.
 
-- `SITE='https://carreraGroup.github.io'`, `BASE='/mercury-docs-ce'` (set in `astro.config.mjs`, mirrored in `src/config.ts` and `.github/ISSUE_TEMPLATE/config.yml`).
-- Site lives at `https://carreraGroup.github.io/mercury-docs-ce`.
+- `SITE='https://docs.getcql.com'`, `BASE='/'` (set in `astro.config.mjs`, mirrored in `src/config.ts` and `.github/ISSUE_TEMPLATE/config.yml`).
+- `public/CNAME` contains `docs.getcql.com` — it's copied into `dist/` on build and is what tells Pages the custom domain. Don't delete it.
+- DNS lives in **GoDaddy**: a `CNAME` for the `docs` label → `carreraGroup.github.io`. Full click-by-click steps, pitfalls, and a smoke checklist: **[`DNS_DOCS_SUBDOMAIN_GODADDY.md`](./DNS_DOCS_SUBDOMAIN_GODADDY.md)**.
 
-**In-page content links are base-path-safe.** Markdown/`<a>`/`LinkCard` links are auto-prefixed at build time by a rehype plugin (`src/plugins/rehype-base-links.mjs`); the hero's frontmatter action links go through a small `Hero.astro` override (`src/utils/base.ts`). Sidebar/nav links are base-aware natively via Starlight. This means switching `SITE`/`BASE` later — e.g. to move to a custom domain — doesn't require touching any content.
+**Legacy:** `https://carreraGroup.github.io/mercury-docs-ce` still resolves to the same Pages site, but it is **not canonical** — don't link to it. If you ever revert to that project-site layout you must change `SITE`, `BASE`, and `public/CNAME` together.
 
-**To move to a custom domain later** (e.g. `docs.getcql.com`): set `SITE='https://docs.getcql.com'` and `BASE='/'` in `astro.config.mjs`, update the same two constants in `src/config.ts`, add a `public/CNAME` file containing the domain, and point its DNS at GitHub Pages. Content requires no changes.
+**In-page content links are base-path-safe.** Markdown/`<a>`/`LinkCard` links are auto-prefixed at build time by a rehype plugin (`src/plugins/rehype-base-links.mjs`); the hero's frontmatter action links go through a small `Hero.astro` override (`src/utils/base.ts`). Sidebar/nav links are base-aware natively via Starlight. So switching `SITE`/`BASE` never requires touching content.
 
 **Image convention:** customer examples use `IMAGE_URI` / `MERCURY_IMAGE` from a private registry or Marketplace subscription. Source builds such as `docker build -t mercury:community .` belong only in contributor notes for people with the private source repository.
 
@@ -42,9 +43,48 @@ Currently configured for the **`carreraGroup/mercury-docs-ce`** repo as a GitHub
 
 ## Deploy to GitHub Pages
 
-1. Create the **`carreraGroup/mercury-docs-ce`** repo (public, empty — no README/license) and push this folder as its root.
-2. In **Settings → Pages**, set **Source = GitHub Actions**.
-3. The included workflow (`.github/workflows/deploy.yml`) builds and deploys on every push to `main`. First push → site goes live at `SITE + BASE`.
+1. Push to `main` in **`carreraGroup/mercury-docs-ce`**.
+2. In **Settings → Pages**, **Source = GitHub Actions** and **Custom domain = `docs.getcql.com`**.
+3. The included workflow (`.github/workflows/deploy.yml`) builds and deploys on every push to `main`.
+4. DNS is a one-time GoDaddy step — see [`DNS_DOCS_SUBDOMAIN_GODADDY.md`](./DNS_DOCS_SUBDOMAIN_GODADDY.md). Tick **Enforce HTTPS** once the DNS check passes.
+
+The docs deploy path is **GitHub Pages only** — it is not on Cloudflare, unlike the marketing site.
+
+---
+
+## The two-site setup
+
+Mercury's web presence is two linked static sites — deliberately not one app:
+
+| Site | Repo | Host | Role |
+|---|---|---|---|
+| <https://getcql.com> | `mercury-pitch-pack` | Cloudflare (Wrangler) | Marketing, benchmarks, **request access** |
+| <https://docs.getcql.com> | `mercury-docs` (this repo) | GitHub Pages | Partner docs, **quickstart**, evaluation feedback |
+
+Cross-links are single-sourced: `MARKETING_URL` and `REQUEST_ACCESS_URL` in
+`src/config.ts` (mirrored in `astro.config.mjs`) drive the header links, the
+sidebar's *Evaluation program* group, and the copy in `index.mdx`.
+
+Partner one-liner: **request at getcql.com → docs at docs.getcql.com/quickstart**.
+
+---
+
+## Feedback (two separate inboxes)
+
+| Moment | Where | Mechanism |
+|---|---|---|
+| Wants access | getcql.com | Early-access Formspree form (`xlgyyaqa`) |
+| In trial, product/docs feedback | docs.getcql.com/feedback | Evaluation-feedback Formspree form — **needs a form ID** |
+| A specific wrong page or bug | any docs page footer | Prefilled GitHub issue form |
+| Anything else | email | `hello@carrera.io` |
+
+**To turn the feedback form on:** create a *second* Formspree form (so access
+requests and product feedback don't land in the same inbox) and paste its ID
+into `FEEDBACK_FORM_ID` in `src/config.ts`. Until then, `/feedback` renders an
+email fallback rather than a form that silently drops submissions.
+
+Fields collected: work email, organization, what you tried, what broke, parity
+notes, would-you-deploy, free text.
 
 ---
 
@@ -74,10 +114,11 @@ There's nothing to host for this to work — it all runs off the repo's Issues t
 
 ```
 mercury-docs/
-├── astro.config.mjs            # site/base, sidebar, theme, fonts, GitHub repo
+├── astro.config.mjs            # site/base, sidebar, theme, fonts, GitHub repo, marketing links
+├── DNS_DOCS_SUBDOMAIN_GODADDY.md  # one-time GoDaddy → GitHub Pages setup
 ├── package.json
 ├── src/
-│   ├── config.ts               # GITHUB_REPO (keep in sync with astro.config)
+│   ├── config.ts               # GITHUB_REPO, marketing links, FEEDBACK_FORM_ID
 │   ├── content.config.ts       # Starlight docs collection
 │   ├── styles/mercury.css      # Mercury theme
 │   ├── assets/logo.png
@@ -85,18 +126,24 @@ mercury-docs/
 │   ├── plugins/
 │   │   └── rehype-base-links.mjs  # auto base-prefixes Markdown links at build time
 │   ├── components/
-│   │   ├── Footer.astro         # adds the per-page "Report an issue" button
+│   │   ├── Footer.astro         # per-page "Report an issue" + feedback buttons
 │   │   ├── ReportIssue.astro    # prefilled GitHub issue link
+│   │   ├── SocialIcons.astro    # header links back to getcql.com
+│   │   ├── FeedbackForm.astro   # evaluation-feedback form (Formspree)
 │   │   └── Hero.astro           # base-prefixes frontmatter hero.actions links
 │   └── content/docs/
 │       ├── index.mdx            # Overview / what's free
 │       ├── quickstart.mdx
+│       ├── feedback.mdx         # Evaluation feedback form
 │       ├── containers.mdx
 │       ├── loading-data.mdx
 │       ├── data-persistence.mdx
 │       ├── reference/{cqf-api,rest-api,cli}.mdx
 │       └── support/{troubleshooting,faq,conformance}.mdx
-├── public/logo.png
+├── public/
+│   ├── CNAME                   # docs.getcql.com — required by GitHub Pages
+│   ├── logo.png
+│   └── quickstart/             # fixtures the Quickstart downloads
 └── .github/
     ├── workflows/deploy.yml     # GitHub Pages deploy
     └── ISSUE_TEMPLATE/          # bug + docs issue forms

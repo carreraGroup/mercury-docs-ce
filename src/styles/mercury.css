@@ -107,3 +107,142 @@ h2 {
 .card {
   border-color: var(--sl-color-gray-6);
 }
+
+/* ── Header links back to the marketing site (SocialIcons override) ────── */
+.mercury-header-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--sl-font-mono);
+  font-size: 0.78rem;
+}
+.mercury-header-links a {
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: var(--sl-color-gray-2);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.mercury-header-links a:hover {
+  color: var(--sl-color-white);
+  background: var(--sl-color-gray-6);
+}
+.mercury-header-links a.accent {
+  color: var(--sl-color-text-accent);
+  border: 1px solid var(--sl-color-gray-5);
+}
+.mercury-header-links a.accent:hover {
+  border-color: var(--sl-color-accent);
+  background: var(--sl-color-accent-low);
+}
+/* The header gets tight before the mobile menu kicks in — drop the softer
+   link first, then both. Both are still in the sidebar. */
+@media (max-width: 72rem) {
+  .mercury-header-links a:not(.accent) { display: none; }
+}
+@media (max-width: 50rem) {
+  .mercury-header-links { display: none; }
+}
+
+/* ── Evaluation feedback form ──────────────────────────────────────────── */
+.mercury-feedback {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 1.5rem;
+  padding: 24px;
+  border: 1px solid var(--sl-color-gray-6);
+  border-radius: 12px;
+  background: var(--sl-color-bg);
+}
+/* Starlight adds a top margin to every sibling in markdown content; the grid
+   already supplies the gaps, so cancel it inside the form. */
+.sl-markdown-content .mercury-feedback > * + * {
+  margin-top: 0;
+}
+.mercury-feedback label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.mercury-feedback label.wide,
+.mercury-feedback .actions {
+  grid-column: span 2;
+}
+.mercury-feedback label > span {
+  font-size: 0.82rem;
+  color: var(--sl-color-gray-2);
+}
+.mercury-feedback input,
+.mercury-feedback textarea,
+.mercury-feedback select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 7px;
+  background: var(--sl-color-bg);
+  color: var(--sl-color-white);
+  font: inherit;
+  font-size: 0.9rem;
+}
+.mercury-feedback textarea {
+  resize: vertical;
+}
+.mercury-feedback input:focus,
+.mercury-feedback textarea:focus,
+.mercury-feedback select:focus {
+  outline: 2px solid var(--sl-color-accent);
+  outline-offset: 1px;
+}
+.mercury-feedback .actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.mercury-feedback button {
+  padding: 11px 22px;
+  border: none;
+  border-radius: 7px;
+  background: var(--sl-color-accent);
+  /* Literal white — --sl-color-white is dark ink in the light theme. */
+  color: #fff;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.mercury-feedback button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.mercury-feedback .hint {
+  font-size: 0.82rem;
+  color: var(--sl-color-gray-3);
+}
+.mercury-feedback .sent {
+  grid-column: span 2;
+  font-size: 0.95rem;
+  color: var(--sl-color-white);
+}
+.mercury-feedback-fallback {
+  margin-top: 1.5rem;
+  padding: 18px 22px;
+  border: 1px solid var(--sl-color-gray-6);
+  border-radius: 12px;
+  background: var(--sl-color-bg);
+}
+@media (max-width: 40rem) {
+  .mercury-feedback { grid-template-columns: 1fr; }
+  .mercury-feedback label.wide,
+  .mercury-feedback .actions,
+  .mercury-feedback .sent { grid-column: span 1; }
+}
+
+/* Footer action buttons ("Report an issue" + "Send evaluation feedback") */
+.mercury-footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}

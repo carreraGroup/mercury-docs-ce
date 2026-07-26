@@ -6,21 +6,27 @@ import { rehypeBaseLinks } from './src/plugins/rehype-base-links.mjs';
 // ─────────────────────────────────────────────────────────────────────────
 //  WHERE THE SITE LIVES  — change these two when you know the URL.
 //
-//  GitHub Pages, project site (current):
-//      SITE = 'https://carreraGroup.github.io'  BASE = '/mercury-docs-ce'
-//  GitHub Pages, user/org site OR custom domain (e.g. docs.getcql.com):
+//  GitHub Pages behind the custom domain (current — canonical):
 //      SITE = 'https://docs.getcql.com'         BASE = '/'
+//      (requires public/CNAME + the GoDaddy CNAME record — see
+//       DNS_DOCS_SUBDOMAIN_GODADDY.md)
+//  GitHub Pages, bare project site (legacy fallback):
+//      SITE = 'https://carreraGroup.github.io'  BASE = '/mercury-docs-ce'
 //
 //  In-page content links are automatically prefixed with BASE at build
 //  time (see src/plugins/rehype-base-links.mjs), so switching between the
 //  two above only ever requires changing these two constants.
 // ─────────────────────────────────────────────────────────────────────────
-const SITE = 'https://carreraGroup.github.io';
-const BASE = '/mercury-docs-ce';
+const SITE = 'https://docs.getcql.com';
+const BASE = '/';
 
 // Your public repo (used for the GitHub link + "Report an issue" buttons).
 // Also update src/config.ts to the same value.
 const GITHUB_REPO = 'carreraGroup/mercury-docs-ce';
+
+// The marketing site. Keep in sync with src/config.ts.
+const MARKETING_URL = 'https://getcql.com';
+const REQUEST_ACCESS_URL = 'https://getcql.com/#request-access';
 
 export default defineConfig({
   site: SITE,
@@ -40,6 +46,9 @@ export default defineConfig({
       components: {
         Footer: './src/components/Footer.astro',
         Hero: './src/components/Hero.astro',
+        // Adds "Mercury home" / "Request access" links to the header, next to
+        // the social icons — the visible way back to the marketing site.
+        SocialIcons: './src/components/SocialIcons.astro',
       },
       // Docs are not community-editable — no "Edit this page" link (editLink omitted).
       head: [
@@ -91,9 +100,25 @@ export default defineConfig({
             { label: 'Troubleshooting & FAQ', slug: 'support/troubleshooting' },
             { label: 'FAQ & security', slug: 'support/faq' },
             { label: 'Conformance & correctness', slug: 'support/conformance' },
+            { label: 'Evaluation feedback', slug: 'feedback' },
             {
               label: 'Report an issue ↗',
               link: `https://github.com/${GITHUB_REPO}/issues/new/choose`,
+              attrs: { target: '_blank', rel: 'noopener' },
+            },
+          ],
+        },
+        {
+          label: 'Evaluation program',
+          items: [
+            {
+              label: 'Mercury home ↗',
+              link: MARKETING_URL,
+              attrs: { target: '_blank', rel: 'noopener' },
+            },
+            {
+              label: 'Request access ↗',
+              link: REQUEST_ACCESS_URL,
               attrs: { target: '_blank', rel: 'noopener' },
             },
           ],

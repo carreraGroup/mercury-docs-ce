@@ -1,0 +1,109 @@
+---
+/**
+ * Evaluation-feedback form for partners in the limited trial.
+ *
+ * Posts to Formspree (no backend — works on static GitHub Pages). If
+ * FEEDBACK_FORM_ID is empty, renders an email fallback instead of a form so
+ * the page never presents a button that silently drops submissions.
+ */
+import { FEEDBACK_FORM_ID, CONTACT_EMAIL } from '../config.ts';
+
+const action = FEEDBACK_FORM_ID
+  ? `https://formspree.io/f/${FEEDBACK_FORM_ID}`
+  : null;
+---
+
+{action ? (
+  <form class="mercury-feedback" id="evaluation-feedback-form" action={action} method="POST">
+    <label>
+      <span>Work email</span>
+      <input type="email" name="email" required placeholder="you@org.com" />
+    </label>
+
+    <label>
+      <span>Organization</span>
+      <input type="text" name="org" placeholder="e.g. Acme Health" />
+    </label>
+
+    <label class="wide">
+      <span>What did you try?</span>
+      <textarea name="what_you_tried" rows="3" placeholder="Quickstart, your own eCQMs, a side-by-side against CQF Ruler / Blaze…"></textarea>
+    </label>
+
+    <label class="wide">
+      <span>What broke, or got in the way?</span>
+      <textarea name="what_broke" rows="3" placeholder="Errors, missing docs, unclear steps, anything that cost you time."></textarea>
+    </label>
+
+    <label class="wide">
+      <span>Parity notes — did results match your reference engine?</span>
+      <textarea name="parity_notes" rows="3" placeholder="Measures compared, any disagreements, how you compared them."></textarea>
+    </label>
+
+    <label class="wide">
+      <span>Would you deploy Mercury?</span>
+      <select name="would_deploy">
+        <option value="">Select…</option>
+        <option value="yes-production">Yes — in production</option>
+        <option value="yes-internal">Yes — internal / non-production first</option>
+        <option value="maybe">Maybe — depends on what's missing</option>
+        <option value="not-yet">Not yet</option>
+        <option value="no">No</option>
+      </select>
+    </label>
+
+    <label class="wide">
+      <span>Anything else</span>
+      <textarea name="notes" rows="3" placeholder="Missing capability, packaging, pricing shape, what you'd need before rollout."></textarea>
+    </label>
+
+    <div class="actions">
+      <button type="submit">Send feedback</button>
+      <span class="hint">or email <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
+    </div>
+  </form>
+) : (
+  <div class="mercury-feedback-fallback">
+    <p>
+      The feedback form isn’t wired up yet. Until it is, send evaluation
+      feedback to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> —
+      what you tried, what broke, whether results matched your reference
+      engine, and whether you’d deploy Mercury.
+    </p>
+  </div>
+)}
+
+<script is:inline>
+  (function () {
+    var form = document.getElementById('evaluation-feedback-form');
+    if (!form) return;
+    var btn = form.querySelector('button[type="submit"]');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var original = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' },
+      })
+        .then(function (r) {
+          if (r.ok) {
+            form.innerHTML =
+              '<div class="sent"><strong>Thanks — got it.</strong><br>' +
+              'We read every one of these, and they shape what ships next.</div>';
+          } else {
+            btn.disabled = false;
+            btn.textContent = original;
+            alert('Something went wrong. Please email us directly.');
+          }
+        })
+        .catch(function () {
+          btn.disabled = false;
+          btn.textContent = original;
+          alert('Network error. Please email us directly.');
+        });
+    });
+  })();
+</script>

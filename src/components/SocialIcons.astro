@@ -1,0 +1,16 @@
+---
+/**
+ * Header override: renders Starlight's default social icons and prepends
+ * text links back to the marketing site, so every docs page has a visible
+ * route home and a route to the access request form.
+ */
+import Default from '@astrojs/starlight/components/SocialIcons.astro';
+import { MARKETING_URL, REQUEST_ACCESS_URL } from '../config.ts';
+---
+
+<div class="mercury-header-links">
+  <a href={MARKETING_URL}>Mercury home</a>
+  <a class="accent" href={REQUEST_ACCESS_URL}>Request access</a>
+</div>
+
+<Default><slot /></Default>
