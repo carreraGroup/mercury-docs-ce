@@ -8,8 +8,8 @@ import { rehypeBaseLinks } from './src/plugins/rehype-base-links.mjs';
 //
 //  GitHub Pages behind the custom domain (current — canonical):
 //      SITE = 'https://docs.getcql.com'         BASE = '/'
-//      (requires public/CNAME + the GoDaddy CNAME record — see
-//       DNS_DOCS_SUBDOMAIN_GODADDY.md)
+//      (requires public/CNAME + the Cloudflare CNAME record — see
+//       DNS_DOCS_SUBDOMAIN_CLOUDFLARE.md)
 //  GitHub Pages, bare project site (legacy fallback):
 //      SITE = 'https://carreraGroup.github.io'  BASE = '/mercury-docs-ce'
 //

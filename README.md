@@ -31,7 +31,7 @@ Search (offline, via Pagefind) is built in and works on the static build automat
 
 - `SITE='https://docs.getcql.com'`, `BASE='/'` (set in `astro.config.mjs`, mirrored in `src/config.ts` and `.github/ISSUE_TEMPLATE/config.yml`).
 - `public/CNAME` contains `docs.getcql.com` — it's copied into `dist/` on build and is what tells Pages the custom domain. Don't delete it.
-- DNS lives in **GoDaddy**: a `CNAME` for the `docs` label → `carreraGroup.github.io`. Full click-by-click steps, pitfalls, and a smoke checklist: **[`DNS_DOCS_SUBDOMAIN_GODADDY.md`](./DNS_DOCS_SUBDOMAIN_GODADDY.md)**.
+- DNS lives in **Cloudflare** (same zone as the marketing site): a `CNAME` for the `docs` label → `carreraGroup.github.io`, **proxy off / grey cloud** so GitHub can issue its certificate. Full click-by-click steps, pitfalls, and a smoke checklist: **[`DNS_DOCS_SUBDOMAIN_CLOUDFLARE.md`](./DNS_DOCS_SUBDOMAIN_CLOUDFLARE.md)**.
 
 **Legacy:** `https://carreraGroup.github.io/mercury-docs-ce` still resolves to the same Pages site, but it is **not canonical** — don't link to it. If you ever revert to that project-site layout you must change `SITE`, `BASE`, and `public/CNAME` together.
 
@@ -46,7 +46,7 @@ Search (offline, via Pagefind) is built in and works on the static build automat
 1. Push to `main` in **`carreraGroup/mercury-docs-ce`**.
 2. In **Settings → Pages**, **Source = GitHub Actions** and **Custom domain = `docs.getcql.com`**.
 3. The included workflow (`.github/workflows/deploy.yml`) builds and deploys on every push to `main`.
-4. DNS is a one-time GoDaddy step — see [`DNS_DOCS_SUBDOMAIN_GODADDY.md`](./DNS_DOCS_SUBDOMAIN_GODADDY.md). Tick **Enforce HTTPS** once the DNS check passes.
+4. DNS is a one-time Cloudflare step — see [`DNS_DOCS_SUBDOMAIN_CLOUDFLARE.md`](./DNS_DOCS_SUBDOMAIN_CLOUDFLARE.md). Tick **Enforce HTTPS** once the DNS check passes.
 
 The docs deploy path is **GitHub Pages only** — it is not on Cloudflare, unlike the marketing site.
 
@@ -115,7 +115,7 @@ There's nothing to host for this to work — it all runs off the repo's Issues t
 ```
 mercury-docs/
 ├── astro.config.mjs            # site/base, sidebar, theme, fonts, GitHub repo, marketing links
-├── DNS_DOCS_SUBDOMAIN_GODADDY.md  # one-time GoDaddy → GitHub Pages setup
+├── DNS_DOCS_SUBDOMAIN_CLOUDFLARE.md  # one-time Cloudflare → GitHub Pages setup
 ├── package.json
 ├── src/
 │   ├── config.ts               # GITHUB_REPO, marketing links, FEEDBACK_FORM_ID
