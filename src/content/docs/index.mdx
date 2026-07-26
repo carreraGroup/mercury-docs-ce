@@ -1,9 +1,9 @@
 ---
 title: Mercury
-description: Fast, drop-in CQL evaluation for FHIR quality measures. The Community Edition runs Core in your infrastructure.
+description: Fast, drop-in CQL evaluation for FHIR quality measures. Community runs free self-hosted Core; AWS Marketplace will offer paid Core by container and AMI.
 template: splash
 hero:
-  tagline: A CQL evaluation engine for FHIR quality measures, built in Rust. It speaks the same FHIR CQF API as the reference stack, so it drops into the pipeline you already run — only far faster. Community Edition runs the Core engine in your infrastructure.
+  tagline: A CQL evaluation engine for FHIR quality measures, built in Rust. It speaks the same FHIR CQF API as the reference stack, so it drops into the pipeline you already run — only far faster. Community runs free self-hosted Core under closed-source terms; AWS Marketplace will offer paid Core by container and AMI.
   image:
     file: ../../assets/logo.png
   actions:
@@ -33,7 +33,7 @@ Mercury is currently available to select partners. There's no public download ye
     The same FHIR CQF API and CLI contract as the reference stack. Point your existing tools at a new URL — no rewrites.
   </Card>
   <Card title="Simple to operate" icon="puzzle">
-    One binary, one container, no JVM. Fewer services to deploy, monitor, and keep alive. Durable local persistence.
+    One binary, one container, one AMI path, no JVM. Fewer services to deploy, monitor, and keep alive. Durable local persistence.
   </Card>
   <Card title="Validated" icon="open-book">
     Checked against the HL7 CQL 1.5.2 language test suite. See <a href={withBase('/support/conformance')}>Conformance &amp; correctness</a>.
@@ -42,7 +42,7 @@ Mercury is currently available to select partners. There's no public download ye
 
 ## What's in the Community Edition
 
-The Community Edition runs Mercury Core in your own infrastructure under the project license. Interoperability, observability, and other add-on packs are not enabled by default.
+The Community Edition runs Mercury Core for free in your own infrastructure under closed-source terms. Interoperability, observability, and other add-on packs are future add-ons and are not included.
 
 - The full Mercury CQL evaluation engine.
 - **FHIR CQF REST API:** `/metadata`, `Library` and `Measure` CRUD, and `$evaluate` — plus `$data-requirements` and `$package` stubs for harness compatibility.
@@ -54,7 +54,7 @@ The Community Edition runs Mercury Core in your own infrastructure under the pro
 - **Single binary and Docker image;** composes with existing MCT and facility FHIR servers.
 
 <Aside type="tip" title="AWS Marketplace">
-Mercury is being prepared for paid AWS Marketplace Core offerings as both a container and an AMI. The planned listing shape is flat contract pricing for 1-month and 12-month terms. It is not live yet, and add-on packs will come later.
+Mercury is being prepared for paid AWS Marketplace Core offerings as both a container and an AMI. The planned listing shape is contract pricing for 1-month and 12-month terms only. There is no hourly metering path, and add-on packs are not included.
 </Aside>
 
 ## Start here
@@ -68,7 +68,7 @@ Mercury is being prepared for paid AWS Marketplace Core offerings as both a cont
 
 ## Beyond Core
 
-Mercury Core covers evaluation end to end. Optional **add-on packs** layer extra capability on top of the same engine — they're **additive and independent, not tiers**: Connect (integration & bulk data), Insight (observability), HA (reliability), Security (identity & governance), and Trust / Quality (data-quality scoring). All are **in development**. Nothing on this docs site requires them.
+Mercury Core covers evaluation end to end. Optional **add-on packs** will layer extra capability on top of the same engine — they're **additive and independent, not tiers**: Connect (integration & bulk data), Insight (observability), HA (reliability), Security (identity & governance), and Trust / Quality (data-quality scoring). They are future add-ons and are not included in the Community or Path A AWS Marketplace Core offering.
 
 ## Getting help
 
