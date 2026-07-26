@@ -1,9 +1,9 @@
 ---
 title: Mercury
-description: Fast, drop-in CQL evaluation for FHIR quality measures. The Community Edition is free to self-host.
+description: Fast, drop-in CQL evaluation for FHIR quality measures. The Community Edition runs Core in your infrastructure.
 template: splash
 hero:
-  tagline: A CQL evaluation engine for FHIR quality measures, built in Rust. It speaks the same FHIR CQF API as the reference stack, so it drops into the pipeline you already run — only far faster. Community Edition is free to self-host.
+  tagline: A CQL evaluation engine for FHIR quality measures, built in Rust. It speaks the same FHIR CQF API as the reference stack, so it drops into the pipeline you already run — only far faster. Community Edition runs the Core engine in your infrastructure.
   image:
     file: ../../assets/logo.png
   actions:
@@ -11,7 +11,7 @@ hero:
       link: /quickstart
       icon: right-arrow
       variant: primary
-    - text: What you get for free
+    - text: What's in Core
       link: '#whats-in-the-community-edition'
       variant: minimal
 ---
@@ -20,7 +20,7 @@ import { Card, CardGrid, LinkCard, Aside, Badge } from '@astrojs/starlight/compo
 import { withBase } from '../../utils/base';
 
 :::note[Limited release]
-Mercury is currently available to select partners. There's no public download yet — [register your interest](https://getcql.com) to get Community Edition access. This site documents the free, self-hosted experience.
+Mercury is currently available to select partners. There's no public download yet — [register your interest](https://getcql.com) to get Community Edition access. This site documents the self-hosted Core experience.
 :::
 
 ## Why Mercury
@@ -42,7 +42,7 @@ Mercury is currently available to select partners. There's no public download ye
 
 ## What's in the Community Edition
 
-The Community Edition is the whole engine, free to run in your own infrastructure. There are no feature gates on the core.
+The Community Edition runs Mercury Core in your own infrastructure under the project license. Interoperability, observability, and other add-on packs are not enabled by default.
 
 - The full Mercury CQL evaluation engine.
 - **FHIR CQF REST API:** `/metadata`, `Library` and `Measure` CRUD, and `$evaluate` — plus `$data-requirements` and `$package` stubs for harness compatibility.
@@ -53,8 +53,8 @@ The Community Edition is the whole engine, free to run in your own infrastructur
 - **Structured logging** (pretty or JSON) with configurable levels.
 - **Single binary and Docker image;** composes with existing MCT and facility FHIR servers.
 
-<Aside type="tip" title="Prefer one-click?">
-The same free engine is also offered as a one-click AWS Marketplace package for teams who'd rather not build the deployment themselves.
+<Aside type="tip" title="AWS Marketplace">
+Mercury is being prepared for paid AWS Marketplace Core offerings as both a container and an AMI. The planned listing shape is flat contract pricing for 1-month and 12-month terms. It is not live yet, and add-on packs will come later.
 </Aside>
 
 ## Start here
@@ -66,9 +66,9 @@ The same free engine is also offered as a one-click AWS Marketplace package for 
   <LinkCard title="Mounting your data drive" description="Keep libraries, measures, and data across restarts with a mounted volume." href={withBase('/data-persistence')} />
 </CardGrid>
 
-## Beyond the free core
+## Beyond Core
 
-The Community Edition covers evaluation end to end. Optional **add-on packs** layer extra capability on top of the same engine — they're **additive and independent, not tiers**: Connect (integration & bulk data), Insight (observability), HA (reliability), Security (identity & governance), and Trust / Quality (data-quality scoring). All are **in development**. Nothing on this docs site requires them.
+Mercury Core covers evaluation end to end. Optional **add-on packs** layer extra capability on top of the same engine — they're **additive and independent, not tiers**: Connect (integration & bulk data), Insight (observability), HA (reliability), Security (identity & governance), and Trust / Quality (data-quality scoring). All are **in development**. Nothing on this docs site requires them.
 
 ## Getting help
 
