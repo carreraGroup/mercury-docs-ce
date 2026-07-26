@@ -14,6 +14,16 @@ The fastest honest test of Mercury is **parity plus speed**: run the same librar
 - A **FHIR patient bundle** and any value sets the measure under test needs.
 - *Optional:* your existing reference stack, running, for a side-by-side comparison.
 
+## Build the local image
+
+Until your team has a published registry image, use the local image name `mercury:community` throughout these docs:
+
+```bash
+docker build -t mercury:community .
+```
+
+If you later pull a published image such as `ghcr.io/EXAMPLE/mercury:2.1.0`, replace `mercury:community` consistently in the examples below.
+
 ## The happy path
 
 <Steps>
@@ -23,7 +33,10 @@ The fastest honest test of Mercury is **parity plus speed**: run the same librar
    <Tabs>
      <TabItem label="Docker">
      ```bash
-     docker run --rm -p 8080:8080 mercury serve --host 0.0.0.0 --port 8080
+     docker run --rm \
+       -p 8080:8080 \
+       -v mercury-data:/var/lib/mercury \
+       mercury:community
      ```
      </TabItem>
      <TabItem label="Binary">
@@ -37,6 +50,17 @@ The fastest honest test of Mercury is **parity plus speed**: run the same librar
 
    ```bash
    curl -fsS http://127.0.0.1:8080/api/health
+   ```
+
+   Example response:
+
+   ```json
+   {
+     "status": "UP",
+     "version": "2.1.0",
+     "edition": "community",
+     "packs": ["core"]
+   }
    ```
 
 2. **Load your data** — POST a FHIR bundle.
@@ -67,13 +91,22 @@ The fastest honest test of Mercury is **parity plus speed**: run the same librar
 A FHIR `Parameters` resource whose `evaluate` part lists each expression and its value — for example `InDenominator → "true"`.
 </Aside>
 
+## Fixture smoke test
+
+The repository includes a fixture-based happy path under `examples/quickstart` and a Docker smoke script that builds `mercury:community`, starts the server, checks `/api/health`, loads the bundle and library, runs `$evaluate`, and cleans up:
+
+```bash
+scripts/quickstart_smoke.sh
+```
+
+The expected final line is `Quickstart smoke passed`.
+
 ## One-shot: the `run` command
 
-Prefer a single command? The CLI `run` command loads data, loads the library, and executes against a running server in one call. Data is supplied **inline** with the request and isn't persisted — ideal for quick checks and CI.
+Prefer a single command without starting the server? The CLI `run` command evaluates local artifacts in-process. Data is supplied **inline** and isn't persisted — ideal for quick checks and CI.
 
 ```bash
 mercury run \
-  --base-url http://127.0.0.1:8080 \
   --data bundle.json \
   --valueset valuesets.json \
   --operation Test:1.0.0:InDenominator \
@@ -84,6 +117,14 @@ mercury run \
 ```
 
 See the difference between loading data ahead of time and passing it inline in [Loading data: preload vs inline](/loading-data).
+
+To verify the binary edition without the startup banner:
+
+```bash
+mercury --no-banner edition
+```
+
+Community builds report `edition=community` and enable Core only by default. Interoperability and observability surfaces stay off unless explicitly enabled.
 
 ## What success looks like
 
@@ -96,4 +137,5 @@ See the difference between loading data ahead of time and passing it inline in [
 - [Running the containers](/containers) — the full drop-in stack and its ports.
 - [Mounting your data drive](/data-persistence) — keep state across restarts.
 - [CQF API reference](/reference/cqf-api) — every endpoint you just used.
+- [AWS Marketplace](/aws-marketplace) — customer deployment placeholders for paid Core container and AMI listings.
 - Hit a snag? [Troubleshooting & FAQ](/support/troubleshooting).

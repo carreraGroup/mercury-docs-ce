@@ -1,0 +1,73 @@
+---
+title: AWS Marketplace
+description: Customer-facing notes for the planned paid Mercury Core container and AMI listings.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Mercury is being prepared for paid AWS Marketplace Core delivery as both a container and an AMI. The intended Marketplace shape is contract pricing with 1-month and 12-month terms.
+
+<Aside type="caution" title="Listing status">
+Do not treat these commands as a live subscription path until your AWS Marketplace listing is published. The image URI, AMI id, product SKU, and License Manager values below are placeholders that the seller account owner must replace.
+</Aside>
+
+## What the listing includes
+
+- Mercury Core only.
+- Container and AMI delivery options.
+- 1-month and 12-month contract terms.
+- No hourly metering, `RegisterUsage`, or `MeterUsage`.
+- No Interoperability, Observability, HA, Security, or Trust/Quality add-on packs in this Core listing.
+
+## Container placeholder
+
+Use the in-repo ECS sample as an operator template after the human Marketplace workflow provides the final values:
+
+- Template: `deploy/aws-marketplace/container/cloudformation.yaml`
+- Image URI placeholder: `TODO-marketplace-container-image-uri`
+- Product SKU placeholder: `TODO-product-sku`
+- License fingerprint placeholder: `TODO-license-manager-issuer-fingerprint`
+
+The container mounts durable state at `/var/lib/mercury` and sets `MERCURY_EDITION=marketplace` as a consistency check. The binary itself must be built with the marketplace feature.
+
+## AMI placeholder
+
+Use the in-repo AMI assets as operator templates after the human Marketplace workflow provides the final AMI id and SKU:
+
+- Packer template: `deploy/aws-marketplace/ami/packer.pkr.hcl`
+- EC2 launch sample: `deploy/aws-marketplace/ami/launch-template.yaml`
+- AMI id placeholder: `TODO-marketplace-ami-id`
+- Product SKU placeholder: `TODO-product-sku`
+
+Marketplace AMIs perform the same License Manager entitlement check as marketplace containers. If entitlement fails, the service should not be considered ready.
+
+## Verify a running instance
+
+```bash
+curl -fsS http://<host>:8080/api/health
+```
+
+Expected shape:
+
+```json
+{
+  "status": "UP",
+  "version": "2.1.0",
+  "edition": "marketplace",
+  "packs": ["core"]
+}
+```
+
+Verify the binary directly when you have shell access:
+
+```bash
+mercury --no-banner edition
+```
+
+Marketplace artifacts should print `edition=marketplace`.
+
+## Related templates
+
+- [Running the containers](/containers)
+- [Mounting your data drive](/data-persistence)
+- [Quickstart](/quickstart)

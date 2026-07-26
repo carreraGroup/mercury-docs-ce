@@ -7,6 +7,14 @@ import { Tabs, TabItem, Aside } from '@astrojs/starlight/components';
 
 Mercury ships as a single binary and a Docker image. The quickest way to try it against a realistic pipeline is the drop-in Measure Calculator stack; for development you can also run the server on its own.
 
+Until your team publishes or receives a registry image, build locally and use `mercury:community` in examples:
+
+```bash
+docker build -t mercury:community .
+```
+
+For a published image, replace `mercury:community` with your real image URI, for example `ghcr.io/EXAMPLE/mercury:2.1.0`.
+
 ## The drop-in Measure Calculator stack
 
 Mercury slots in as the **evaluator** inside a Measure Calculator environment, alongside the MCT frontend/backend and facility FHIR servers — matching the layout an existing CQF pipeline already uses. A compose file for that layout looks like this:
@@ -15,10 +23,11 @@ Mercury slots in as the **evaluator** inside a Measure Calculator environment, a
 # docker-compose.yml
 services:
   mercury:
-    image: mercury                    # [TBD: your image reference]
-    command: serve --host 0.0.0.0 --port 8080
+    image: mercury:community
     ports:
       - "8090:8080"
+    volumes:
+      - mercury-data:/var/lib/mercury
 
   mct-ui:
     image: <your-mct-frontend-image>
@@ -39,6 +48,9 @@ services:
     image: <your-fhir-server-image>
     ports:
       - "8082:8080"
+
+volumes:
+  mercury-data:
 ```
 
 ```bash
@@ -77,9 +89,8 @@ To check output parity, run your existing reference stack (the CQL translation s
   docker run --rm \
     -p 8080:8080 \
     -v mercury-data:/var/lib/mercury \
-    mercury serve --host 0.0.0.0 --port 8080
+    mercury:community
   ```
-  <p><em>Image name and tag depend on how you built or pulled Mercury — <code>[TBD: your image reference]</code>.</em></p>
   </TabItem>
 </Tabs>
 
@@ -91,6 +102,19 @@ Every deployment exposes readiness and liveness endpoints — use them in compos
 curl -fsS http://localhost:8080/api/health
 curl -fsS http://localhost:8080/api/ready
 ```
+
+`/api/health` includes the build version, edition, and enabled packs:
+
+```json
+{
+  "status": "UP",
+  "version": "2.1.0",
+  "edition": "community",
+  "packs": ["core"]
+}
+```
+
+The image entrypoint already starts `mercury serve` with `HOST=0.0.0.0` and `PORT=8080`. Override `HOST`, `PORT`, `CQF_BASE_PATH`, `API_BASE_PATH`, or `FHIR_BASE_PATH` as environment variables only when you need non-default routing.
 
 ## Next steps
 

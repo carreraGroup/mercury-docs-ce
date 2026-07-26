@@ -16,6 +16,17 @@ curl -fsS http://127.0.0.1:8080/api/health
 curl -fsS http://127.0.0.1:8080/api/ready
 ```
 
+Example health response:
+
+```json
+{
+  "status": "UP",
+  "version": "2.1.0",
+  "edition": "community",
+  "packs": ["core"]
+}
+```
+
 ## OpenAPI
 
 Fetch the machine-readable API description to generate clients or explore endpoints.
@@ -33,9 +44,35 @@ POST /api/execute
 Content-Type: application/json
 ```
 
-<Aside type="note">
-Request and response shapes are described in the [OpenAPI spec](#openapi) served by your running instance — always the source of truth for your build.
-</Aside>
+Request:
+
+```bash
+curl -X POST http://127.0.0.1:8080/api/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cql": "library Tiny version '\''1.0.0'\''\ncontext Patient\ndefine Answer: true\n",
+    "expression": "Answer",
+    "subject": "Patient/example"
+  }'
+```
+
+Response:
+
+```json
+{
+  "resourceType": "Parameters",
+  "parameter": [
+    {
+      "name": "execute",
+      "part": [
+        { "name": "Answer", "valueBoolean": true }
+      ]
+    }
+  ]
+}
+```
+
+The [OpenAPI spec](#openapi) served by your running instance remains the source of truth for your build.
 
 ## Translate
 

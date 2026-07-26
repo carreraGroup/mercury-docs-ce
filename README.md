@@ -36,7 +36,7 @@ Currently configured for the **`carreraGroup/mercury-docs-ce`** repo as a GitHub
 
 **To move to a custom domain later** (e.g. `docs.getcql.com`): set `SITE='https://docs.getcql.com'` and `BASE='/'` in `astro.config.mjs`, update the same two constants in `src/config.ts`, add a `public/CNAME` file containing the domain, and point its DNS at GitHub Pages. Content requires no changes.
 
-**Remaining `[TBD]` marker:** the published container image reference (`containers.mdx`, `data-persistence.mdx`) — there's no established registry/tag convention yet (only local dev tags like `mercury:dev` exist internally). Fill in once the Community Edition image is actually published. Search `grep -rn "\[TBD" src`.
+**Image convention:** customer examples build a local image as `mercury:community`. Replace it consistently with a real registry URI, such as `ghcr.io/EXAMPLE/mercury:2.1.0`, only after a published image exists.
 
 ---
 

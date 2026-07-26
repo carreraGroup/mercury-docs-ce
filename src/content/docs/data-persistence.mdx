@@ -22,8 +22,7 @@ Add a named volume and mount it at the data directory:
 ```yaml
 services:
   mercury:
-    image: mercury            # [TBD: your image reference]
-    command: serve --host 0.0.0.0 --port 8080
+    image: mercury:community
     ports:
       - "8080:8080"
     volumes:
@@ -39,7 +38,7 @@ volumes:
 docker run --rm \
   -p 8080:8080 \
   -v mercury-data:/var/lib/mercury \
-  mercury serve --host 0.0.0.0 --port 8080
+  mercury:community
 ```
 
 Prefer a host directory (easier to inspect and back up) instead of a named volume:
@@ -48,8 +47,10 @@ Prefer a host directory (easier to inspect and back up) instead of a named volum
 docker run --rm \
   -p 8080:8080 \
   -v /srv/mercury/data:/var/lib/mercury \
-  mercury serve --host 0.0.0.0 --port 8080
+  mercury:community
 ```
+
+If you use a published image, replace `mercury:community` with the actual image URI, for example `ghcr.io/EXAMPLE/mercury:2.1.0`.
 
 ## Verify it persists
 
@@ -63,6 +64,8 @@ docker run --rm \
 3. Re-run an `$evaluate` for the same subject — it should still resolve without reloading.
 
 </Steps>
+
+For a real deployment, always mount `/var/lib/mercury`. Without that mount, the container starts with an empty state after it is recreated.
 
 ## Backups
 

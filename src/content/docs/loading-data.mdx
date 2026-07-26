@@ -40,11 +40,10 @@ Preload once, then iterate on **measure logic** by re-POSTing libraries and re-r
 
 ## Inline — data with the request
 
-The CLI `run` command bundles data, library, and operation into a **single execution** against a running server. Nothing persists, so each run is isolated and easy to reproduce — ideal for **quick tests, CI checks, and one-off comparisons.**
+The CLI `run` command bundles data, library, and operation into a **single local execution**. Nothing persists, so each run is isolated and easy to reproduce — ideal for **quick tests, CI checks, and one-off comparisons.**
 
 ```bash
 mercury run \
-  --base-url http://127.0.0.1:8080 \
   --data bundle.json \
   --valueset valuesets.json \
   --operation Test:1.0.0:InDenominator \

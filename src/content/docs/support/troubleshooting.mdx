@@ -5,12 +5,12 @@ description: Common issues, quick fixes, and straight answers about running the 
 
 import { Aside } from '@astrojs/starlight/components';
 
-Quick fixes for the most common issues, then answers to the questions that come up most. If something here doesn't cover it, use the **Report an issue** button at the bottom of the page.
+Quick fixes for the most common issues, then answers to the questions that come up most. If something here doesn't cover it, use the **Report an issue** button at the bottom of the page or register interest at [getcql.com](https://getcql.com).
 
 ## Common issues
 
 ### Server not reachable
-Confirm `serve` is running and your `--base-url` (or the URL you're curling) matches the host and port. In the drop-in container stack, Mercury is on port `8090`, not `8080`.
+Confirm `serve` is running and the URL you are curling matches the host and port. In the drop-in container stack, Mercury is on port `8090`, not `8080`.
 
 ```bash
 curl -fsS http://127.0.0.1:8080/api/health
@@ -29,7 +29,13 @@ Load the patient bundle first via `POST /cqf/data/bundle`, and make sure the `su
 Confirm the `--data`, `--valueset`, and `--cql`/`--elm` paths exist and are readable.
 
 ### State disappeared after a restart
-The container's data directory wasn't on a mounted volume. See [Mounting your data drive](/data-persistence).
+The container's data directory was not mounted at `/var/lib/mercury`, so the replacement container started from an empty filesystem. Add a named Docker volume or host mount, then reload your libraries and bundles. See [Mounting your data drive](/data-persistence).
+
+### Bulk or connector route returns 403
+Core-only builds keep Interoperability off by default. FHIR Bulk Data, Mercury-native `/api` bulk ingest/export, and Aidbox connector endpoints return `403` unless the Interoperability pack is explicitly enabled for a community build. Marketplace Core keeps add-on packs off.
+
+### Marketplace entitlement or edition mismatch
+Marketplace binaries are built with the marketplace Cargo feature and report `edition=marketplace`. If startup fails with a License Manager or entitlement error, check the instance/task role permissions, `AWS_MARKETPLACE_PRODUCT_SKU`, `AWS_LICENSE_MANAGER_KEY_FINGERPRINT`, and `AWS_MARKETPLACE_ENTITLEMENT_NAME`. If startup says `MERCURY_EDITION` does not match the compile-time edition, verify the binary with `mercury --no-banner edition` and fix either the image/binary or the env var.
 
 ## Security & operations FAQ
 
@@ -65,7 +71,7 @@ No. It's strictly request/response — you supply the libraries, value sets, and
 Mercury is validated against the HL7 CQL 1.5.2 language test suite and benchmarked side-by-side against the reference engine for output parity. See [Conformance & correctness](/support/conformance).
 
 ### What are the support boundaries?
-Community Edition is self-service — this documentation site, and a public issue tracker (best-effort, no response-time guarantee). Guaranteed response times and hands-on help are available as paid enterprise support.
+Community Edition is self-service through this documentation site and the docs repo issue forms where available. For access, support discussions, or anything that should not go in a public issue, register interest at [getcql.com](https://getcql.com). Guaranteed response times and hands-on help are available as paid enterprise support.
 
 <Aside type="caution">
 Mercury Community Edition attests to **no** specific compliance posture. Nothing here should be read as a HIPAA, SOC 2, or other compliance claim.

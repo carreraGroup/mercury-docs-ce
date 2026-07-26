@@ -67,6 +67,7 @@ export default defineConfig({
             { label: 'Overview', link: '/' },
             { label: 'Quickstart', slug: 'quickstart' },
             { label: 'Running the containers', slug: 'containers' },
+            { label: 'AWS Marketplace', slug: 'aws-marketplace' },
           ],
         },
         {

@@ -3,7 +3,7 @@ title: CLI reference
 description: The mercury command line — serve the REST server, run a single operation, and run the CQL language tests.
 ---
 
-The `mercury` CLI has three commands: `serve` (run the REST server), `run` (execute a single operation against a running server), and `lang-tests` (run the CQL language test suite).
+The `mercury` CLI has four commands: `serve` (run the REST server), `run` (execute a single local operation), `lang-tests` (run the CQL language test suite), and `edition` (print the compile-time product edition).
 
 ```bash
 mercury --help
@@ -38,11 +38,10 @@ Routes are served under `/cqf`, `/api`, and `/fhir`. See [Running the containers
 
 ## `run`
 
-Execute a single operation workflow against a **running** server. Data is supplied inline and isn't persisted — see [Loading data: preload vs inline](/loading-data).
+Execute a single operation workflow locally. Data is supplied inline and isn't persisted — see [Loading data: preload vs inline](/loading-data).
 
 ```bash
 mercury run \
-  --base-url http://127.0.0.1:8080 \
   --data /path/to/bundle.json \
   --valueset /path/to/valuesets.json \
   --operation Test:1.0.0:InDenominator \
@@ -56,7 +55,6 @@ Use ELM XML instead of CQL by swapping `--cql` for one or more `--elm` inputs:
 
 ```bash
 mercury run \
-  --base-url http://127.0.0.1:8080 \
   --data /path/to/bundle.json \
   --valueset /path/to/valuesets.json \
   --operation Test:1.0.0:InDenominator \
@@ -71,6 +69,28 @@ mercury run \
 - `--valueset` is repeatable.
 - `--parameter` (alias `--param`) is repeatable; format is `name:value:type`.
 - Use CQL-only *or* ELM-only per run.
+
+## `edition`
+
+Print the compile-time edition without starting the server.
+
+```bash
+mercury --no-banner edition
+```
+
+Community binaries print:
+
+```text
+edition=community
+```
+
+Marketplace binaries are built with the marketplace Cargo feature and print:
+
+```text
+edition=marketplace
+```
+
+`MERCURY_EDITION` is a runtime consistency check, not the switch that changes a binary's edition. A community binary started with `MERCURY_EDITION=marketplace` refuses to start.
 
 ## `lang-tests`
 
