@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import { unified } from '@astrojs/markdown-remark';
 import starlight from '@astrojs/starlight';
 import { rehypeBaseLinks } from './src/plugins/rehype-base-links.mjs';
 
@@ -32,7 +33,9 @@ export default defineConfig({
   site: SITE,
   base: BASE,
   markdown: {
-    rehypePlugins: [rehypeBaseLinks(BASE)],
+    processor: unified({
+      rehypePlugins: [rehypeBaseLinks(BASE)],
+    }),
   },
   integrations: [
     starlight({
